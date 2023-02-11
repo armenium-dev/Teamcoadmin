@@ -24,17 +24,28 @@
 				</div>
 				<div class="row mb-3 align-items-center">
 					<div class="col-4">Province (Abbreviation):</div>
-					<div class="col-8"><input type="text" class="form-control" name="state_province" placeholder="Province (abbreviation)"></div>
+					<div class="col-8">
+						@if(!empty($ship_engine_province_codes))
+							<select class="form-control" name="state_province">
+								<option value="">Province</option>
+								@foreach($ship_engine_province_codes as $code)
+									<option value="{!! $code !!}">{!! $code !!}</option>
+								@endforeach
+							</select>
+						@else
+							<input type="text" class="form-control" name="state_province" placeholder="Province (abbreviation)">
+						@endif
+					</div>
 				</div>
 				<div class="row mb-3 align-items-center">
 					<div class="col-4">Postal Code:</div>
 					<div class="col-8"><input type="text" class="form-control" name="postal_code" placeholder="Postal Code"></div>
 				</div>
-				@if(!empty($custom_fields))
+				@if(!empty($ship_engine_jersey_type_options))
 				<div class="row mb-3 align-items-center">
 					<div class="col-4">Jersey Type:</div>
 					<div class="col-8">
-						@foreach($custom_fields as $k => $v)
+						@foreach($ship_engine_jersey_type_options as $k => $v)
 							@if($v['status'] == 1)
 								<label class="custom-radio"><input type="radio" name="jersey_type" value="{{$k}}"> {{$v['title']}}</label>
 							@endif

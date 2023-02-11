@@ -55,7 +55,7 @@
                             <td>
                                 <select class="form-control" name="value[{{$k}}][transit_time]">
                                     <option value="bday" @if(isset($v['transit_time']) && $v['transit_time'] == 'bday') selected="selected" @endif>Business days</option>
-                                    <option value="cday" @if(isset($v['transit_time']) && $v['transit_time'] == 'cday') selected="selected" @endif>Calendar days</option>
+                                    <option value="cday" @if(isset($v['transit_time']) && $v['transit_time'] == 'cday') selected="selected" @endif>Range</option>
                                 </select>
                             </td>
                             <td><input type="checkbox" class="form-control" name="value[{{$k}}][status]" value="1" {{$v['status'] ? 'checked' : ''}}></td>

@@ -140,6 +140,7 @@ class Rates extends ShipEngine{
 					$delivery_days_label = 'calendar day';
 					
 					if($delivery_days > 2){
+						$delivery_days_label = 'business day';
 						$delivery_days = ($delivery_days - 2).'-'.($delivery_days + 1);
 					}
 				}

@@ -101,14 +101,14 @@ class ServicesController extends Controller {
 	}
 
 	public function getShippingRates(Request $request){
-		
+
 		$admin_view = $request->post('admin_view');
 		$country_code = $request->post('country_code');
 		$state_province = $request->post('state_province');
 		$postal_code = $request->post('postal_code');
 		$units = $request->post('units');
 		$jersey_type = $request->post('jersey_type');
-		
+
 		if(empty($country_code) || empty($state_province) || empty($postal_code) || empty($units)){
 			return response()->json([
 				'raw' => [],
@@ -116,7 +116,7 @@ class ServicesController extends Controller {
 				'desc' => '',
 			]);
 		}
-		
+
 		$params = [
 			"to_country_code" => strtoupper($country_code),
 			"to_state_province" => strtoupper($state_province),
@@ -124,30 +124,40 @@ class ServicesController extends Controller {
 			"units" => intval($units),
 			"jersey_type" => intval($jersey_type),
 		];
-		
+
 		$rates = new Rates();
 		$rates->setAdminView($admin_view);
 		$result = $rates->getEstimateRates($params);
-		
+
 		return response()->json($result);
 	}
-	
+
 	public function getShippingFormFields(){
-		
-		$custom_fields = Settings::get('ship_engine_jersey_type_options');
-		
-		if(!is_null($custom_fields)){
-			$custom_fields = json_decode($custom_fields, true);
+
+		$ship_engine_jersey_type_options = Settings::get('ship_engine_jersey_type_options');
+		$ship_engine_province_codes = Settings::get('ship_engine_province_codes');
+
+		if(!is_null($ship_engine_province_codes)){
+			$ship_engine_province_codes = explode(',', $ship_engine_province_codes);
 		}else{
-			$custom_fields = [];
+			$ship_engine_province_codes = [];
 		}
-		
-		return response()->json(['html' => view('shipping.fields', ['custom_fields' => $custom_fields])->render()]);
+
+		if(!is_null($ship_engine_jersey_type_options)){
+			$ship_engine_jersey_type_options = json_decode($ship_engine_jersey_type_options, true);
+		}else{
+			$ship_engine_jersey_type_options = [];
+		}
+
+		return response()->json(['html' => view('shipping.fields', [
+			'ship_engine_jersey_type_options' => $ship_engine_jersey_type_options,
+			'ship_engine_province_codes' => $ship_engine_province_codes,
+		])->render()]);
 	}
-	
+
 	public function getShippingServices(){
 		$data = collect([
-			#["id" => 0, "name" => "No Preference - Teamco will choose"],
+			//["id" => 0, "name" => "No Preference - Teamco will choose"],
 			["id" => 1, "name" => "Pickup (Markham, ON)"],
 			["id" => 2, "name" => "Canada Post - Expedited Parcel"],
 			["id" => 3, "name" => "Canada Post - Xpresspost"],
@@ -158,7 +168,7 @@ class ServicesController extends Controller {
 			["id" => 8, "name" => "Purolator Ground"],
 			["id" => 9, "name" => "Purolator Express"],
 		]);
-		
+
 		return response()->json(['data' => $data]);
 	}
 }

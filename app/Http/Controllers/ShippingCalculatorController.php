@@ -17,15 +17,25 @@ class ShippingCalculatorController extends Controller{
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index(){
-		$custom_fields = Settings::get('ship_engine_jersey_type_options');
-		
-		if(!is_null($custom_fields)){
-			$custom_fields = json_decode($custom_fields, true);
+		$ship_engine_jersey_type_options = Settings::get('ship_engine_jersey_type_options');
+		$ship_engine_province_codes = Settings::get('ship_engine_province_codes');
+
+		if(!is_null($ship_engine_province_codes)){
+			$ship_engine_province_codes = explode(',', $ship_engine_province_codes);
 		}else{
-			$custom_fields = [];
+			$ship_engine_province_codes = [];
+		}
+
+		if(!is_null($ship_engine_jersey_type_options)){
+			$ship_engine_jersey_type_options = json_decode($ship_engine_jersey_type_options, true);
+		}else{
+			$ship_engine_jersey_type_options = [];
 		}
 		
-		return view('shipping.index', ['custom_fields' => $custom_fields]);
+		return view('shipping.index', [
+			'ship_engine_jersey_type_options' => $ship_engine_jersey_type_options,
+			'ship_engine_province_codes' => $ship_engine_province_codes,
+		]);
 	}
 	
 }
