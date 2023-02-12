@@ -56,4 +56,6 @@ class InfoController extends Controller {
 			return response()->json(['message' => 'yes']);
 		}
 	}
+
+
 }

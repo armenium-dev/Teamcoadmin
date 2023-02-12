@@ -6,6 +6,8 @@ use App\design;
 use App\Settings;
 use App\Size;
 use Illuminate\Http\Request;
+use View;
+use Storage;
 
 class SettingsController extends Controller{
 
@@ -145,17 +147,24 @@ class SettingsController extends Controller{
      */
     public function edit($id){
         $model = Settings::findOrFail($id);
-        $form = 'settings.edit';
+		$name = str_replace('_', '-', $model->name);
+        $form = View::exists('settings.'.$name) ? 'settings.'.$name : 'settings.edit';
         $json_data = [];
 
         switch($model->name){
             case "ship_engine_services_options":
-                $form = 'settings.edit-seso';
+            case "ship_engine_jersey_type_options":
                 $json_data = json_decode($model->value, true);
                 break;
-            case "ship_engine_jersey_type_options":
-                $form = 'settings.edit-seseo';
+            case "roster_form_files_options":
                 $json_data = json_decode($model->value, true);
+				if(empty($json_data)){
+					$json_data = [
+						['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => ''],
+						['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => ''],
+						['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => ''],
+					];
+				}
                 break;
         }
 
@@ -173,9 +182,19 @@ class SettingsController extends Controller{
     public function update(Request $request, $id){
 	    $request_data = $request->all();
     	$values = $request_data['value'];
-    	#dd($request_data);
+    	#dd($values);
     	
     	switch($request_data['name']){
+		    case 'roster_form_files_options':
+				foreach($values as $k => $v){
+					if(isset($v['file'])){
+						$name = str_replace([' ', '+', '!', '(', ')', '[', ']'], '_', $v['file']->getClientOriginalName());
+						$request_data['value'][$k]['file'] = $v['file']->storeAs('roster', $name, ['disk' => 'public']);
+					}else{
+						$request_data['value'][$k]['file'] = $v['old_file'];
+					}
+				}
+				break;
 		    case 'ship_engine_jersey_type_options':
 			    foreach($values as $k => $v){
 				    if(is_null($v['cost'])){
