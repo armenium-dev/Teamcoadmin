@@ -5,8 +5,8 @@
 <div class="row mb-3 align-items-center">
 	<div class="col-12">
 		@if(!empty($ship_engine_province_codes))
-			<select class="form-control" name="state_province">
-				<option value="">Province</option>
+			<select class="form-control state-province" name="state_province">
+				<option value="" class="state-province-option">Province</option>
 				@foreach($ship_engine_province_codes as $code)
 					<option value="{!! $code !!}">{!! $code !!}</option>
 				@endforeach
