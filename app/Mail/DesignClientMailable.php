@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class DesignClientMailable extends Mailable implements ShouldQueue {
     //use Queueable, SerializesModels;
@@ -48,6 +49,10 @@ class DesignClientMailable extends Mailable implements ShouldQueue {
 	public function failed(){
 		// Вызывается при ошибке в задаче...
 		Log::stack(['custom'])->debug('Sending mail failed');
+
+		$mailable = new NotifyMailable(['title' => 'The emails failed to send for Design Form #'.$this->data['design']->id.' to Client']);
+		$mailable->subject('Teamco Admin Alert: Failed Email - Design #'.$this->data['design']->id);
+		Mail::send($mailable);
 	}
 
 }

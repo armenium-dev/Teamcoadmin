@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class RosterClientMailable extends Mailable implements ShouldQueue
 {
@@ -61,6 +62,10 @@ class RosterClientMailable extends Mailable implements ShouldQueue
 	public function failed(){
 		// Вызывается при ошибке в задаче...
 		Log::stack(['custom'])->debug('Sending mail failed');
+
+		$mailable = new NotifyMailable(['title' => 'The emails failed to send for Roster Form #'.$this->data['roster']->id.' to Client']);
+		$mailable->subject('Teamco Admin Alert: Failed Email - Roster #'.$this->data['roster']->id);
+		Mail::send($mailable);
 	}
 
 }

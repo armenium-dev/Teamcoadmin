@@ -10,6 +10,7 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 
 class AdminMailable extends Mailable implements ShouldQueue {
@@ -60,16 +61,20 @@ class AdminMailable extends Mailable implements ShouldQueue {
 	public function failed(){
 		// Вызывается при ошибке в задаче...
 		Log::stack(['custom'])->debug('Sending mail failed');
+
+		$mailable = new NotifyMailable(['title' => 'The emails failed to send for Inquiry Form #'.$this->data['quote']->id.' to Admin']);
+		$mailable->subject('Teamco Admin Alert: Failed Email - Inquiry #'.$this->data['quote']->id);
+		Mail::send($mailable);
 	}
 
-	public function boot(){
+	/*public function boot(){
 		Queue::failing(function(JobFailed $event){
 			Log::stack(['custom'])->debug('Sending mail failed '.$event->connectionName);
 			// $event->connectionName
 			// $event->job
 			// $event->exception
 		});
-	}
+	}*/
 
 
 }
