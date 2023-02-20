@@ -52,7 +52,7 @@ class DesignAdminMailable extends Mailable implements ShouldQueue{
 
 	public function failed(){
 		// Вызывается при ошибке в задаче...
-		Log::stack(['custom'])->debug('Sending mail failed');
+		Log::stack(['custom'])->debug('Design (admin) - Sending mail failed');
 
 		$mailable = new NotifyMailable(['title' => 'The emails failed to send for Design Form #'.$this->data['design']->id.' to Admin']);
 		$mailable->subject('Teamco Admin Alert: Failed Email - Design #'.$this->data['design']->id);

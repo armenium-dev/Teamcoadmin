@@ -68,7 +68,7 @@ class ClientMailable extends Mailable implements ShouldQueue {
 
 	public function failed(){
 		// Вызывается при ошибке в задаче...
-		Log::stack(['custom'])->debug('Sending mail failed');
+		Log::stack(['custom'])->debug('Quote (client) - Sending mail failed');
 
 		$mailable = new NotifyMailable(['title' => 'The emails failed to send for Inquiry Form #'.$this->data['quote']->id.' to Client']);
 		$mailable->subject('Teamco Admin Alert: Failed Email - Inquiry #'.$this->data['quote']->id);
