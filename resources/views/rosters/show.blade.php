@@ -34,7 +34,7 @@
 	@endif
 	<div class="row">
 		<div class="col-md-6 offset-md-3 mb-20">
-			<h4 class="font-weight-bold font-red font-18">1. Contact and Shipping Information:</h4>
+			<h4 class="font-weight-bold font-red font-18">1. (a) Contact and Shipping Information:</h4>
 			<table class="table table-bordered border-balck narrow-first-col slim-td-padding">
 				<tbody>
 					<tr>
@@ -80,6 +80,53 @@
 					<tr>
 						<td><b>Phone:</b></td>
 						<td>{{ $roster->client->phone ?? 'No Phone' }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-6 offset-md-3 mb-20">
+			<h4 class="font-weight-bold font-red font-18">1. (b) Billing Information:</h4>
+			<table class="table table-bordered border-balck narrow-first-col slim-td-padding">
+				<tbody>
+					<tr>
+						<td><b>Name:</b></td>
+						<td>{{ $roster->client->billing->name ?? 'No Name' }}</td>
+					</tr>
+					<tr>
+						<td><b>Company / Org:</b></td>
+						<td>{{ $roster->client->billing->company ?? 'No Company' }}</td>
+					</tr>
+					<tr>
+						<td><b>Address:</b></td>
+						<td>{{ $roster->client->billing->address ?? 'No Address' }}</td>
+					</tr>
+					<tr>
+						<td><b>Address 2:</b></td>
+						<td>{{ $roster->client->billing->address_2 ?? 'No Address' }}</td>
+					</tr>
+					<tr>
+						<td><b>City:</b></td>
+						<td>{{ $roster->client->billing->city ?? 'No City' }}</td>
+					</tr>
+					<tr>
+						<td><b>Prov/State:</b></td>
+						<td>{{ $roster->client->billing->state ?? 'No State' }}</td>
+					</tr>
+					<tr>
+						<td><b>Postal Code:</b></td>
+						<td>{{ $roster->client->billing->zip ?? 'No Postal Code' }}</td>
+					</tr>
+					<tr>
+						<td><b>Country:</b></td>
+						<td>{{ $roster->client->billing->country ?? 'No Country' }}</td>
+					</tr>
+					<tr>
+						<td><b>Email:</b></td>
+						<td>{{ $roster->client->billing->email ?? 'No Email' }}</td>
+					</tr>
+					<tr>
+						<td><b>Phone:</b></td>
+						<td>{{ $roster->client->billing->phone ?? 'No Phone' }}</td>
 					</tr>
 				</tbody>
 			</table>

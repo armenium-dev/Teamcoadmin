@@ -9,7 +9,12 @@ class client extends Model
     protected $fillable = [
         'name','company','address','address_2','state','zip','country','email','phone','city'
     ];
-    public function quote(){
+
+	public function billing(){
+		return $this->hasOne(billing::class);
+	}
+
+	public function quote(){
     	return $this->hasOne(quote::class);
     }
     public function roster(){

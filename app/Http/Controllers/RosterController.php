@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\billing;
 use App\country;
 use App\Http\SVG\arraysHelpers;
 use App\Mail\RosterAdminMailable;
@@ -367,6 +368,9 @@ class RosterController extends Controller{
 		# Updating current Client entry
 		client::find($request->client['id'])->update($request->client);
 		
+		# Updating current Client Billing entry
+		billing::where(['client_id' => $request->client['id']])->update($request->billing);
+
 		# Updating jersey_detail entry
 		$jersey_detail           = $request->jersey_detail;
 		$jersey_detail['colors'] = json_encode($jersey_detail['colors']);

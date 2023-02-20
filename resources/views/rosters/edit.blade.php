@@ -36,7 +36,7 @@
 
 		<div class="row mt-3 text-center">
 			<div class="col-md-6 offset-md-3">
-				<div class="my-4"><h4 class="font-weight-bold font-red font-18">1. Contact and Shipping Information</h4></div>
+				<div class="my-4"><h4 class="font-weight-bold font-red font-18">1. (a) Contact and Shipping Information</h4></div>
 				<div class="form-group"><input type="text" value="{{$roster->reference}}" name="roster[reference]" placeholder="Web Inquiry # or PO# (enter N/A if not applicable)*" required="required" class="form-control"></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->name}}" name="client[name]" placeholder="Name*" required="required" class="form-control"></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->company}}" name="client[company]" placeholder="Company / Organization" class="form-control"></div>
@@ -60,6 +60,30 @@
 				<div class="form-group"><input type="text" value="{{$roster->client->country}}" name="client[country]" placeholder="Country*" required="required" class="form-control"></div>
 				<div class="form-group"><input type="email" value="{{$roster->client->email}}" name="client[email]" placeholder="Email*" required="required" class="form-control"></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->phone}}" name="client[phone]" placeholder="Phone" class="form-control"></div>
+
+				<div class="my-4"><h4 class="font-weight-bold font-red font-18">1. (b) Billing Information</h4></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->name}}" name="billing[name]" placeholder="Name*" required="required" class="form-control"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->company}}" name="billing[company]" placeholder="Company / Organization" class="form-control"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->address}}" name="billing[address]" id="autocomplete" placeholder="Address*" required="required" class="form-control pac-target-input" autocomplete="off"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->address_2}}" name="billing[address_2]" placeholder="Address 2" class="form-control"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->city}}" name="billing[city]" placeholder="City*" required="required" class="form-control"></div>
+				<div class="form-group">
+					<select name="billing[state]" required="required" class="form-control">
+						<option value="">Prov / State*</option>
+						@foreach($states as $key => $states_group)
+							<optgroup label="{{$states_group['name']}}">
+								@foreach($states_group['states'] as $state)
+									@php $selected = ($state->state_code == $roster->client->billing->state) ? 'selected=selected' : '' @endphp
+									<option value="{{$state->state_code}}" {{$selected}}>{{$state->name}}</option>
+								@endforeach
+							</optgroup>
+						@endforeach
+					</select>
+				</div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->zip}}" name="billing[zip]" placeholder="Postal Code*" required="required" class="form-control"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->country}}" name="billing[country]" placeholder="Country*" required="required" class="form-control"></div>
+				<div class="form-group"><input type="email" value="{{$roster->client->billing->email}}" name="billing[email]" placeholder="Email*" required="required" class="form-control"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->phone}}" name="billing[phone]" placeholder="Phone" class="form-control"></div>
 
 				<div class="my-4"><h4 class="font-weight-bold font-red font-18">2. Shipping Method</h4></div>
 				<p class="text-center"><em class="itl">Please list any other items that are also part of your order (e.g. matching shorts, hockey socks, etc.)</em></p>

@@ -29,56 +29,106 @@
 	<div class="roster_attach"></div>
 	<div class="clear"></div>
 	<div class="ml-10">
-        <h2>1. Contact and Shipping Information</h2>
-        <div>
-            <table>
-				<tr>
-                    <td class="text_bold">TEAMCO Reference Number:</td>
-                    <td>{{ $data['roster']->reference }}</td>
-                </tr>
-				<tr>
-                    <td class="text_bold">Name:</td>
-                    <td>{{ $data['roster']->client->name }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Organization:</td>
-                    <td>{{ $data['roster']->client->company }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Address 1:</td>
-                    <td>{{ $data['roster']->client->address }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Address 2:</td>
-                    <td>{{ $data['roster']->client->address_2 }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">City:</td>
-                    <td>{{ $data['roster']->client->city }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Prov/State:</td>
-                    <td>{{ $data['roster']->client->state }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Postal Code:</td>
-                    <td>{{ $data['roster']->client->zip }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Country:</td>
-                    <td>{{ $data['roster']->client->country }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Email:</td>
-                    <td>{{ $data['roster']->client->email }}</td>
-                </tr>
-                <tr>
-                    <td class="text_bold">Phone:</td>
-                    <td>{{ $data['roster']->client->phone }}</td>
-                </tr>
-            </table>
-        </div>
-        <div class="clear"></div>
+		<div class="mt-0">
+			<h2>1. (a) Contact and Shipping Information</h2>
+			<div>
+				<table>
+					<tr>
+						<td class="text_bold">TEAMCO Reference Number:</td>
+						<td>{{ $data['roster']->reference }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Name:</td>
+						<td>{{ $data['roster']->client->name }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Organization:</td>
+						<td>{{ $data['roster']->client->company }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Address 1:</td>
+						<td>{{ $data['roster']->client->address }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Address 2:</td>
+						<td>{{ $data['roster']->client->address_2 }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">City:</td>
+						<td>{{ $data['roster']->client->city }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Prov/State:</td>
+						<td>{{ $data['roster']->client->state }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Postal Code:</td>
+						<td>{{ $data['roster']->client->zip }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Country:</td>
+						<td>{{ $data['roster']->client->country }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Email:</td>
+						<td>{{ $data['roster']->client->email }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Phone:</td>
+						<td>{{ $data['roster']->client->phone }}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="clear"></div>
+		<div class="mt-20">
+			<h2>1. (b) Billing Information</h2>
+			<div>
+				<table>
+					<tr>
+						<td class="text_bold">Name:</td>
+						<td>{{ $data['billing']->name }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Organization:</td>
+						<td>{{ $data['billing']->company }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Address 1:</td>
+						<td>{{ $data['billing']->address }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Address 2:</td>
+						<td>{{ $data['billing']->address_2 }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">City:</td>
+						<td>{{ $data['billing']->city }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Prov/State:</td>
+						<td>{{ $data['billing']->state }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Postal Code:</td>
+						<td>{{ $data['billing']->zip }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Country:</td>
+						<td>{{ $data['billing']->country }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Email:</td>
+						<td>{{ $data['billing']->email }}</td>
+					</tr>
+					<tr>
+						<td class="text_bold">Phone:</td>
+						<td>{{ $data['billing']->phone }}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="clear"></div>
         <div class="mt-20">
 	        <h2>2. Shipping Method</h2>
 	        <div>

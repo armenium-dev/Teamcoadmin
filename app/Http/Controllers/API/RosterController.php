@@ -21,7 +21,7 @@ class RosterController extends Controller {
 	private $debug = false;
 	
 	public function create(Request $request){
-	
+		#dd($request->user);
 	    if($this->debug){
 		    dd([
 			    $request->Roster['comments'],
@@ -49,6 +49,7 @@ class RosterController extends Controller {
 		
 	    
     	$client = client::create($request->user);
+		$billing = $client->billing()->create($request->billing);
     	$roster = $client->roster()->create($request->Roster);
 
 	    Log::stack(['custom'])->debug('Roster Form #'.$roster->id);
@@ -257,6 +258,7 @@ class RosterController extends Controller {
 		$data = [
         	'environment' => $request->environment,
             'roster' => $roster,
+            'billing' => $billing,
             'jersey_detail' => json_decode($roster->jersey->colors)
         ];
 
