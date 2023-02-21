@@ -64,7 +64,7 @@
 				<div class="my-4"><h4 class="font-weight-bold font-red font-18">1. (b) Billing Information</h4></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->billing->name}}" name="billing[name]" placeholder="Name*" required="required" class="form-control"></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->billing->company}}" name="billing[company]" placeholder="Company / Organization" class="form-control"></div>
-				<div class="form-group"><input type="text" value="{{$roster->client->billing->address}}" name="billing[address]" id="autocomplete" placeholder="Address*" required="required" class="form-control pac-target-input" autocomplete="off"></div>
+				<div class="form-group"><input type="text" value="{{$roster->client->billing->address}}" name="billing[address]" id="billing_autocomplete" placeholder="Address*" required="required" class="form-control pac-target-input" autocomplete="off"></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->billing->address_2}}" name="billing[address_2]" placeholder="Address 2" class="form-control"></div>
 				<div class="form-group"><input type="text" value="{{$roster->client->billing->city}}" name="billing[city]" placeholder="City*" required="required" class="form-control"></div>
 				<div class="form-group">
@@ -293,8 +293,8 @@
 
 	</form>
 	<script type="text/javascript">
-		var client_place = {};
 		var onPlaceChanged = function(){
+			var my_place = {};
 			var place = autocomplete.getPlace();
 			if(!place.geometry){
 				window.alert("No details available for input: '" + place.name + "'");
@@ -304,13 +304,32 @@
 			var formated_place = formatResult(place);
 			//console.log(formated_place);
 
-			client_place.city = formated_place.city;
-			client_place.state = formated_place.state;
-			client_place.zip = formated_place.zip;
-			client_place.country = formated_place.country;
-			client_place.address = place.name;
+			my_place.city = formated_place.city;
+			my_place.state = formated_place.state;
+			my_place.zip = formated_place.zip;
+			my_place.country = formated_place.country;
+			my_place.address = place.name;
 
-			fillFields(client_place);
+			fillFields(my_place, 'client');
+		};
+		var onPlaceChangedBilling = function(){
+			var my_place = {};
+			var place = bill_autocomplete.getPlace();
+			if(!place.geometry){
+				window.alert("No details available for input: '" + place.name + "'");
+				return;
+			}
+			//console.log(place);
+			var formated_place = formatResult(place);
+			//console.log(formated_place);
+
+			my_place.city = formated_place.city;
+			my_place.state = formated_place.state;
+			my_place.zip = formated_place.zip;
+			my_place.country = formated_place.country;
+			my_place.address = place.name;
+
+			fillFields(my_place, 'billing');
 		};
 		var formatResult = function(addressComponent){
 			var address = {};
@@ -342,18 +361,18 @@
 
 			return address;
 		};
-		var fillFields = function(client_place){
-			//console.log(client_place);
-			$('input[name="client[address]"]').val(client_place.address);
-			$('input[name="client[city]"]').val(client_place.city);
-			$('input[name="client[zip]"]').val(client_place.zip);
-			$('input[name="client[country]"]').val(client_place.country);
-			$('select[name="client[state]"]').find('option').attr('selected', false).end().val(client_place.state);
+		var fillFields = function(my_place, type){
+			$('input[name="'+type+'[address]"]').val(my_place.address);
+			$('input[name="'+type+'[city]"]').val(my_place.city);
+			$('input[name="'+type+'[zip]"]').val(my_place.zip);
+			$('input[name="'+type+'[country]"]').val(my_place.country);
+			$('select[name="'+type+'[state]"]').find('option').attr('selected', false).end().val(my_place.state);
 		};
 
 		const center = { lat: 50.064192, lng: -130.605469 };
 		const defaultBounds = {north: center.lat + 0.1, south: center.lat - 0.1, east: center.lng + 0.1, west: center.lng - 0.1};
 		const input = document.getElementById("autocomplete");
+		const bill_input = document.getElementById("billing_autocomplete");
 		const options = {
 			bounds: defaultBounds,
 			componentRestrictions: { country: "ca" },
@@ -363,6 +382,8 @@
 		};
 		const autocomplete = new google.maps.places.Autocomplete(input, options);
 		autocomplete.addListener("place_changed", onPlaceChanged);
+		const bill_autocomplete = new google.maps.places.Autocomplete(bill_input, options);
+		bill_autocomplete.addListener("place_changed", onPlaceChangedBilling);
 
 		jQuery(document).ready(function($){
 
