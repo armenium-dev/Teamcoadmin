@@ -144,6 +144,9 @@ class Rates extends ShipEngine{
 						$delivery_days = ($delivery_days - 2).'-'.($delivery_days + 1);
 					}
 				}
+				if($this->se_settings['services_options'][$sc]['desc'] == 'Canada Post'){
+					$delivery_days_label = 'business day';
+				}
 			}
 			$results[$sc]['delivery_days'] = sprintf('%s %s%s', $delivery_days, $delivery_days_label, $delivery_days_suffix);
 			
