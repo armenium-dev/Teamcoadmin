@@ -12,6 +12,7 @@
 		table tfoot td,
 		table tr {border: 1px solid #000 !important;}
 		.print-mt-big {margin-top: 80px;}
+		.pagebreak {clear: both; page-break-before: always;}
 	}
 </style>
 @endsection
@@ -224,6 +225,9 @@
 				</tfoot>
 			</table>
 		</div>
+
+		<div class="pagebreak"> </div>
+
 		<div class="col-md-6 offset-md-3 mb-20">
 			<h4 class="font-weight-bold font-red font-18">9. Shorts or Socks Quantities Per Set:</h4>
 			<table class="table table-bordered border-balck narrow-first-col slim-td-padding">
@@ -260,7 +264,7 @@
 				</tfoot>
 			</table>
 		</div>
-		<div class="col-md-6 offset-md-3 mb-20 print-mt-big">
+		<div class="col-md-6 offset-md-3 mb-20">
 			<h4 class="font-weight-bold font-red font-18">{!! $roster->settings['section_9']['title'] !!}:</h4>
 			<table class="table table-bordered border-balck slim-td-padding font-16">
 					<tr>
