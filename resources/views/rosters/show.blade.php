@@ -44,43 +44,43 @@
 					</tr>
 					<tr>
 						<td><b>Name:</b></td>
-						<td>{{ $roster->client->name ?? 'No Name' }}</td>
+						<td>{{ $roster->client->name ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Company / Org:</b></td>
-						<td>{{ $roster->client->company ?? 'No Company' }}</td>
+						<td>{{ $roster->client->company ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Address:</b></td>
-						<td>{{ $roster->client->address ?? 'No Address' }}</td>
+						<td>{{ $roster->client->address ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Address 2:</b></td>
-						<td>{{ $roster->client->address_2 ?? 'No Address' }}</td>
+						<td>{{ $roster->client->address_2 ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>City:</b></td>
-						<td>{{ $roster->client->city ?? 'No City' }}</td>
+						<td>{{ $roster->client->city ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Prov/State:</b></td>
-						<td>{{ $roster->client->state ?? 'No State' }}</td>
+						<td>{{ $roster->client->state ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Postal Code:</b></td>
-						<td>{{ $roster->client->zip ?? 'No Postal Code' }}</td>
+						<td>{{ $roster->client->zip ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Country:</b></td>
-						<td>{{ $roster->client->country ?? 'No Country' }}</td>
+						<td>{{ $roster->client->country ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Email:</b></td>
-						<td>{{ $roster->client->email ?? 'No Email' }}</td>
+						<td>{{ $roster->client->email ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Phone:</b></td>
-						<td>{{ $roster->client->phone ?? 'No Phone' }}</td>
+						<td>{{ $roster->client->phone ?? '' }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -91,43 +91,43 @@
 				<tbody>
 					<tr>
 						<td><b>Name:</b></td>
-						<td>{{ $roster->client->billing->name ?? 'No Name' }}</td>
+						<td>{{ $roster->client->billing->name ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Company / Org:</b></td>
-						<td>{{ $roster->client->billing->company ?? 'No Company' }}</td>
+						<td>{{ $roster->client->billing->company ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Address:</b></td>
-						<td>{{ $roster->client->billing->address ?? 'No Address' }}</td>
+						<td>{{ $roster->client->billing->address ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Address 2:</b></td>
-						<td>{{ $roster->client->billing->address_2 ?? 'No Address' }}</td>
+						<td>{{ $roster->client->billing->address_2 ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>City:</b></td>
-						<td>{{ $roster->client->billing->city ?? 'No City' }}</td>
+						<td>{{ $roster->client->billing->city ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Prov/State:</b></td>
-						<td>{{ $roster->client->billing->state ?? 'No State' }}</td>
+						<td>{{ $roster->client->billing->state ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Postal Code:</b></td>
-						<td>{{ $roster->client->billing->zip ?? 'No Postal Code' }}</td>
+						<td>{{ $roster->client->billing->zip ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Country:</b></td>
-						<td>{{ $roster->client->billing->country ?? 'No Country' }}</td>
+						<td>{{ $roster->client->billing->country ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Email:</b></td>
-						<td>{{ $roster->client->billing->email ?? 'No Email' }}</td>
+						<td>{{ $roster->client->billing->email ?? '' }}</td>
 					</tr>
 					<tr>
 						<td><b>Phone:</b></td>
-						<td>{{ $roster->client->billing->phone ?? 'No Phone' }}</td>
+						<td>{{ $roster->client->billing->phone ?? '' }}</td>
 					</tr>
 				</tbody>
 			</table>
