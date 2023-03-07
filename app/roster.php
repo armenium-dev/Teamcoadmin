@@ -5,8 +5,19 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 class roster extends Model{
-	
-	protected $fillable = ['reference', 'comments', 'number_color', 'inside_color', 'outside_color', 'accessory_items', 'settings', 'shipping_method'];
+
+	protected $fillable = [
+		'reference',
+		'comments',
+		'number_color',
+		'inside_color',
+		'outside_color',
+		'accessory_items',
+		'settings',
+		'shipping_method',
+		'jersey_set_name',
+		'short_set_name'
+	];
 	
 	public static $default_settings = [
 		'section_1'  => ['title' => '1. Contact and Shipping Information'],

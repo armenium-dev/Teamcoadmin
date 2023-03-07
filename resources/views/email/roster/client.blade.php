@@ -18,6 +18,8 @@
 		.clear {clear: both;}
 		.roster_attach {font: bold 16px Arial, sans-serif;font-style: italic;color: #a33c4a;text-align:left;}
 		p { margin:0px; color:#000;,font-size: 12px; font-family: Arial}
+		.font-dark-blue {color: #22228c;}
+		.bold {font-weight: bold;}
 	</style>
 </head>
 <body>
@@ -195,9 +197,15 @@
 	    </div>
 	    <div class="clear"></div>
 	    <div class="mt-20">
-		    <h2>7. Jersey Quantities</h2>
+		    <h2>8. Jersey Quantities Per Set</h2>
 		    <div>
 			    <table>
+					@if($data['roster']->jersey_set_name)
+						<tr>
+							<td class="font-dark-blue bold">Set Name</td>
+							<td class="font-dark-blue bold">{{$data['roster']->jersey_set_name}}</td>
+						</tr>
+					@endif
 				    @forelse($data['roster']->quantities as $quantity)
 					    @if($quantity->type == "top")
 						    <tr>
@@ -217,9 +225,15 @@
 	    </div>
 	    <div class="clear"></div>
 		<div class="mt-20">
-			<h2>8. Shorts or Socks Quantities</h2>
+			<h2>9. Shorts or Socks Quantities Per Set</h2>
 			<div>
 				<table>
+					@if($data['roster']->short_set_name)
+						<tr>
+							<td class="font-dark-blue bold">Set Name</td>
+							<td class="font-dark-blue bold">{{$data['roster']->short_set_name}}</td>
+						</tr>
+					@endif
 					@forelse($data['roster']->quantities as $quantity)
 						@if($quantity->type == "short")
 							<tr>

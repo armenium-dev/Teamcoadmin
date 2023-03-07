@@ -189,9 +189,15 @@
 			<p class="mb-1">{!! $roster->comments ? nl2br($roster->comments) : 'No comments' !!}</p>
 		</div>
 		<div class="col-md-6 offset-md-3 mb-20">
-			<h4 class="font-weight-bold font-red font-18">7. Jersey Quantities:</h4>
+			<h4 class="font-weight-bold font-red font-18">8. Jersey Quantities Per Set:</h4>
 			<table class="table table-bordered border-balck narrow-first-col slim-td-padding">
 				<thead>
+				@if($roster->jersey_set_name)
+					<tr>
+						<th class="font-dark-blue">Set Name</th>
+						<th class="font-dark-blue">{{$roster->jersey_set_name}}</th>
+					</tr>
+				@endif
 					<tr>
 						<th>Size</th>
 						<th>Quantity</th>
@@ -219,9 +225,15 @@
 			</table>
 		</div>
 		<div class="col-md-6 offset-md-3 mb-20">
-			<h4 class="font-weight-bold font-red font-18">8. Shorts or Socks Quantities:</h4>
+			<h4 class="font-weight-bold font-red font-18">9. Shorts or Socks Quantities Per Set:</h4>
 			<table class="table table-bordered border-balck narrow-first-col slim-td-padding">
 				<thead>
+				@if($roster->short_set_name)
+					<tr>
+						<th class="font-dark-blue">Set Name</th>
+						<th class="font-dark-blue">{{$roster->short_set_name}}</th>
+					</tr>
+				@endif
 					<tr>
 						<th>Size</th>
 						<th>Quantity</th>

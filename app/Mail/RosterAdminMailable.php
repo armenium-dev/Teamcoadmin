@@ -75,4 +75,5 @@ class RosterAdminMailable extends Mailable implements ShouldQueue{
 		$mailable->subject('Teamco Admin Alert: Failed Email - Roster #'.$this->data['roster']->id);
 		Mail::send($mailable);
 	}
+
 }

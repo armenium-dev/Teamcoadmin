@@ -116,10 +116,18 @@
 					<textarea name="roster[comments]" cols="20" rows="5" required="required" placeholder="Please describe the artwork you would like on the jerseys, where it should be placed and any other relevant information. Please also include the correct spelling of your Team Name (if applicable)" class="form-control text-area">{{$roster->comments}}</textarea>
 				</div>
 
-                <div class="my-4"><h4 class="font-weight-bold font-red font-18">7. Jersey Quantities</h4></div>
+				<div class="mt-4 mb-0"><h4 class="font-weight-bold font-red font-18">7. If you are ordering multiple sets of jerseys - please note</h4></div>
+				<p class="font-gray"><em>(skip if N/A)</em></p>
+				<p><em>If the roster below is to be used for multiple sets of jerseys, please write the name of each set in the next section.</em></p>
+				<p><em>If you are ordering multiple sets of jerseys - which have different rosters - please complete a separate Roster Form for each set, and write the applicable Set Name in the next section.</em></p>
+
+				<div class="my-4"><h4 class="font-weight-bold font-red font-18">8. Jersey Quantities Per Set</h4></div>
                 <div class="form-group">
                     <table class="table table-bordered custom-table mb-3">
                         <thead>
+							<tr>
+								<th colspan="2" class="p-0"><input type="text" value="{{$roster->jersey_set_name}}" name="roster[jersey_set_name]" placeholder="Enter Set Name(s) if applicable" class="form-control border-0"></th>
+							</tr>
                             <tr>
                                 <th>Size</th>
                                 <th>Quantity</th>
@@ -140,10 +148,13 @@
                     </table>
                 </div>
 
-				<div class="my-4"><h4 class="font-weight-bold font-red font-18">8. Shorts or Socks Quantities</h4></div>
+				<div class="my-4"><h4 class="font-weight-bold font-red font-18">9. Shorts or Socks Quantities Per Set</h4></div>
                 <div class="form-group">
                     <table class="table table-bordered custom-table mb-3">
                         <thead>
+							<tr>
+								<th colspan="2" class="p-0"><input type="text" value="{{$roster->short_set_name}}" name="roster[short_set_name]" placeholder="Enter Set Name(s) if applicable" class="form-control border-0"></th>
+							</tr>
 	                        <tr>
 	                            <th>Size</th>
 	                            <th>Quantity</th>

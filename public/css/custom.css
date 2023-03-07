@@ -26,6 +26,8 @@
 .card .top-nav {word-wrap: normal;}
 .site-nav .nav-item a {display: block; padding: 5px 0;}
 
+.font-gray {color: #7a7b7b;}
+.font-dark-blue {color: #22228c;}
 .font-red {color: #C81836;}
 .font-16 {font-size: 16px;}
 .font-18 {font-size: 18px;}
@@ -49,10 +51,10 @@ label.img-item img {max-width: 100%; max-height: 110px; display: block; margin: 
 .hidden {display: none;}
 .title-edit-btn {cursor: pointer; margin-left: 15px;}
 
-.custom-table {width: 36% !important; margin: 0 auto}
+.custom-table {width: 44% !important; margin: 0 auto}
 .custom-table td {padding: 0 10px !important; vertical-align: middle !important; text-align: center; white-space: nowrap;}
 .custom-table td .form-control {border: 0}
-.custom-table th {padding: .5rem !important;}
+.custom-table th:not(.p-0) {padding: .5rem !important;}
 .custom-table td .form-control:focus {box-shadow: unset !important}
 .custom-table input[readonly] {background-color: transparent;}
 .custom-table-2 {/*max-width: 450px !important;*/ margin: 0 auto;}
