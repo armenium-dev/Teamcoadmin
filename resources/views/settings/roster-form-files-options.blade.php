@@ -35,12 +35,13 @@
                 <input type="text" class="form-control" name="name" placeholder="Option name" value="{{$settings->name}}">
             </div>
             <div class="form-group">
-                <label for="name">Value:</label>
+                <label for="name">Values:</label>
                 <table id="js_multi_data_table" class="table table-striped">
                         <tr>
                             <th>Title</th>
                             <th>Current</th>
                             <th>Upload new one</th>
+                            <th>Display in form</th>
                         </tr>
                     @foreach($json_data as $k => $v)
                         <tr>
@@ -51,6 +52,9 @@
                                 <input type="hidden" class="form-control" name="value[{{$k}}][title]" value="{{$v['title']}}">
                                 <input type="hidden" class="form-control" name="value[{{$k}}][old_file]" value="{{$v['file']}}">
                                 <input type="file" class="form-control" name="value[{{$k}}][file]">
+                            </td>
+                            <td>
+                                <input type="checkbox" class="form-control" name="value[{{$k}}][display]" value="1" {!! (isset($v['display']) && $v['display']) ? 'checked' : '' !!}>
                             </td>
                         </tr>
                     @endforeach

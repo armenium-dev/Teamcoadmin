@@ -160,9 +160,9 @@ class SettingsController extends Controller{
                 $json_data = json_decode($model->value, true);
 				if(empty($json_data)){
 					$json_data = [
-						['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => ''],
-						['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => ''],
-						['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => ''],
+						['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => '', 'display' => true],
+						['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => '', 'display' => true],
+						['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => '', 'display' => true],
 					];
 				}
                 break;

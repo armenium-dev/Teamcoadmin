@@ -179,7 +179,10 @@ class ServicesController extends Controller {
 		if(!empty($roster_form_files_options)){
 			$roster_form_files_options = json_decode($roster_form_files_options, true);
 			foreach($roster_form_files_options as $option){
-				$res[$option['id']] = url('storage/'.$option['file']);
+				$res[$option['id']] = [
+					'url' => url('storage/'.$option['file']),
+					'display' => (isset($option['display']) ? $option['display'] : 0),
+				];
 			}
 		}
 

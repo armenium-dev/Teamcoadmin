@@ -32,7 +32,7 @@ Route::get('getSizes','API\ServicesController@getSizes')->name('sizes');
 Route::get('getShippingServices','API\ServicesController@getShippingServices')->name('services.services');
 Route::post('getShippingRates','API\ServicesController@getShippingRates')->name('services.rates');
 Route::get('getShippingFormFields','API\ServicesController@getShippingFormFields')->name('services.fields');
-#Route::get('getRosterStaticFiles','API\ServicesController@getRosterStaticFiles')->name('services.files');
+Route::get('getRosterStaticFiles','API\ServicesController@getRosterStaticFiles')->name('services.files');
 
 
 Route::post('quotes','API\QuotesController@create')->name('quotes.create');
