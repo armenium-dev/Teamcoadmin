@@ -268,12 +268,12 @@ class RosterController extends Controller {
 	    Log::stack(['single'])->debug(json_encode($data));
 	    $when = Carbon::now()->addSecond(30);
 
-	    Log::stack(['custom'])->debug('Adding admin mail to the task table');
+	    Log::stack(['custom'])->debug('Adding admin mail to the jobs table');
 
 	    $mailable = new RosterAdminMailable($data);
 	    $mailable->replyTo($roster->client->email, $roster->client->name);
-	    //$mailable->cc('armen@digidez.com', 'Armen');
-	    Mail::to(config('mail.from.address'))->later($when, $mailable);
+		$mailable->subject('Roster Form #'.$roster->id);
+	    Mail::to(config('mail.admin.to'))->later($when, $mailable);
 	    unset($mailable);
 
 	    if($request->environment == 'dev'){
@@ -284,6 +284,7 @@ class RosterController extends Controller {
 
 	    Log::stack(['custom'])->debug('Adding client mail to the task table');
 	    $mailable = new RosterClientMailable($data);
+		$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Roster Form #['.$roster->id.'] - ['.$roster->client->name.']');
 	    Mail::to($roster->client->email)->later($when, $mailable);
 	    unset($mailable);

@@ -55,8 +55,7 @@ class DesignController extends Controller {
 	    $mailable = new DesignAdminMailable($data);
 	    $mailable->replyTo($design->client->email, $design->client->name);
 	    $mailable->subject('Custom Design Form #D'.$design->id);
-	    //$mailable->cc('armen@digidez.com', 'Armen');
-	    Mail::to(config('mail.from.address'))->later($when, $mailable);
+	    Mail::to(config('mail.admin.to'))->later($when, $mailable);
 	    unset($mailable);
 
 	    if($request->environment == 'dev'){
@@ -66,7 +65,7 @@ class DesignController extends Controller {
 	    }
 	
 	    $mailable = new DesignClientMailable($data);
-	    $mailable->from(config('mail.from.address'), 'Teamco Sportswear Admin');
+	    $mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Custom Design Form #D'.$design->id.' - '.$design->client->name.'');
 	    Mail::to($design->client->email)->later($when, $mailable);
 	    unset($mailable);

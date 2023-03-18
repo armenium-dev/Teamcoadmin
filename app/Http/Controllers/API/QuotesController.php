@@ -26,17 +26,10 @@ class QuotesController extends Controller {
     public function create(Request $request){
 
 
-    	if($this->logging){
-		    Log::stack(['custom'])->debug('// BEGIN _________________________________________');
-		    Log::stack(['custom'])->debug(__CLASS__);
-	    }
 
         $client = client::create($request->user);
         $quote = $client->quote()->create($request->quote);
 
-	    if($this->logging){
-		    Log::stack(['custom'])->debug('Teamco Web Inquiry #'.$quote->id);
-	    }
 
         if($request->files->count() > 0){
            $data = arraysHelpers::saveFiles($request);
@@ -70,21 +63,27 @@ class QuotesController extends Controller {
 
 	    $when = Carbon::now()->addSecond(30);
 
-	    if($this->logging){
-		    Log::stack(['custom'])->debug('Adding admin mail to the task table');
-	    }
-	    Mail::to(config('mail.from.address'))->later($when, new AdminMailable($mail_data));
+		$mailable = new AdminMailable($mail_data);
+		#$mailable->from(config('mail.admin.from'), config('mail.admin.name'));
+		$mailable->replyTo($quote->client->email, $quote->client->name);
+		$mailable->subject('Teamco Web Inquiry #'.$quote->id);
+	    Mail::to(config('mail.admin.to'))->later($when, $mailable);
+		unset($mailable);
 
-	    if($this->logging){
-		    Log::stack(['custom'])->debug('Adding client mail to the task table');
-	    }
 	    $mailable = new ClientMailable($mail_data);
+		#$mailable->from(config('mail.client.from'), config('mail.client.name'));
+		$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Web Inquiry - ['.$quote->client->name.'] - #'.$quote->id);
 	    Mail::to($quote->client->email)->later($when, $mailable);
 	    unset($mailable);
 
-	    if($this->logging){
+		if($this->logging){
 		    $jobs = $this->get_jobs_count();
+			Log::stack(['custom'])->debug('// BEGIN _________________________________________');
+			Log::stack(['custom'])->debug(__CLASS__);
+			Log::stack(['custom'])->debug('Teamco Web Inquiry #'.$quote->id);
+			Log::stack(['custom'])->debug('Adding admin mail to the task table');
+			Log::stack(['custom'])->debug('Adding client mail to the task table');
 		    Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
 		    Log::stack(['custom'])->debug('// END');
 	    }

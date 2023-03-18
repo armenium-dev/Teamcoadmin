@@ -271,7 +271,7 @@
 						<th>Row</th>
 						<th>Size</th>
 						<th>Number</th>
-						<th>{!! $roster->settings['section_9']['table_head']['head_4'] !!}</th>
+						<th>{!! ($roster->settings['section_9']['table_head']['head_4'] == 'Jersey Name' ? 'Name' : $roster->settings['section_9']['table_head']['head_4']) !!}</th>
 						<th>{!! $roster->settings['section_9']['table_head']['head_5'] !!}</th>
 						<th>Short</th>
 					</tr>

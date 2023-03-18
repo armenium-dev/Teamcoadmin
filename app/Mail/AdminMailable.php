@@ -34,14 +34,10 @@ class AdminMailable extends Mailable implements ShouldQueue {
      */
     public function build(){
 
-        $message = $this->markdown('email.quotes.admin')
-                        ->from(config('mail.from.address'), config('mail.from.name'))
-                        //->cc($this->data['quote']->client->email, $this->data['quote']->client->name)
-                        //->cc('armen@digidez.com', $this->data['quote']->client->name)
-                        //->bcc($this->data['quote']->client->email, $this->data['quote']->client->name)
-                        ->replyTo($this->data['quote']->client->email, $this->data['quote']->client->name)
-                        //->replyTo(config('mail.from.address'), config('mail.from.name'))
-                        ->subject('Teamco Web Inquiry #'.$this->data['quote']->id);
+        $message = $this->markdown('email.quotes.admin');
+			#->from(config('mail.admin.from'), config('mail.admin.name'))
+			#->replyTo($this->data['quote']->client->email, $this->data['quote']->client->name)
+			#->subject('Teamco Web Inquiry #'.$this->data['quote']->id);
 
 	    if(count($this->data['quote']->files) > 0){
 		    foreach($this->data['quote']->files as $file){

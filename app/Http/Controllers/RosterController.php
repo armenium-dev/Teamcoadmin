@@ -504,12 +504,13 @@ class RosterController extends Controller{
 			case "admin":
 				$mailable = new RosterAdminMailable($data);
 				$mailable->replyTo($data['roster']->client->email, $data['roster']->client->name);
-				Mail::to(config('mail.from.address'))->later($when, $mailable);
+				Mail::to(config('mail.admin.to'))->later($when, $mailable);
 				unset($mailable);
 				break;
 			case "client":
 				$mailable = new RosterClientMailable($data);
 				$mailable->subject('Teamco Roster Form #['.$data['roster']->id.'] - ['.$data['roster']->client->name.']');
+				$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 				Mail::to($data['roster']->client->email)->later($when, $mailable);
 				unset($mailable);
 				break;

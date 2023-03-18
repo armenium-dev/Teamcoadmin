@@ -89,20 +89,26 @@ return [
         ],
 
         'custom' => [
-	        'driver' => 'single',
+	        'driver' => 'monthly',
 	        'path' => storage_path('logs/custom.log'),
 	        'level' => 'debug',
         ],
 
         'laravel' => [
-	        'driver' => 'single',
+	        'driver' => 'daily',
 	        'path' => storage_path('logs/laravel.log'),
 	        'level' => 'debug',
         ],
 
         'cron' => [
-	        'driver' => 'single',
+	        'driver' => 'daily',
 	        'path' => storage_path('logs/cron.log'),
+	        'level' => 'debug',
+        ],
+
+        'test' => [
+	        'driver' => 'daily',
+	        'path' => storage_path('logs/test.log'),
 	        'level' => 'debug',
         ],
 

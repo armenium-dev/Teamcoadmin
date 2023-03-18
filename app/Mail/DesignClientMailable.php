@@ -32,9 +32,10 @@ class DesignClientMailable extends Mailable implements ShouldQueue {
      */
     public function build(){
 
-	    $message = $this->markdown('email.design.client')
-            ->from(config('mail.from.address'), config('mail.from_u.name'))
-            ->subject('Teamco Custom Design Form #D'.$this->data['design']->id.' - '.$this->data['design']->client->name.'');
+	    $message = $this->markdown('email.design.client');
+            #->from(config('mail.client.from'), config('mail.client.name'))
+			#->replyTo(config('mail.client.reply'), config('mail.client.name'))
+            #->subject('Teamco Custom Design Form #D'.$this->data['design']->id.' - '.$this->data['design']->client->name.'');
 
         if(count($this->data['design']->files) >0){
             foreach($this->data['design']->files as $file){
