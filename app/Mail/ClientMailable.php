@@ -38,10 +38,10 @@ class ClientMailable extends Mailable implements ShouldQueue {
      */
     public function build(){
 	    
-        $message = $this->markdown('email.quotes.client');
-			#->from(config('mail.client.from'), config('mail.client.name'))
-			#->replyTo(config('mail.client.reply'), config('mail.client.name'))
-			#->subject('Teamco Web Inquiry - '.$this->data['quote']->client->name.' - #'.$this->data['quote']->id);
+        $message = $this->markdown('email.quotes.client')
+			->from(config('mail.client.from'), config('mail.client.name'))
+			->replyTo(config('mail.client.reply'), config('mail.client.name'))
+			->subject('Teamco Web Inquiry - '.$this->data['quote']->client->name.' - #'.$this->data['quote']->id);
 
 	    if(count($this->data['quote']->files) > 0){
 		    #Log::stack(['custom'])->debug('Attached files: '.$this->data['quote']->files);

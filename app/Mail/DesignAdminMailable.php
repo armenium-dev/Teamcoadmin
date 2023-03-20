@@ -31,10 +31,10 @@ class DesignAdminMailable extends Mailable implements ShouldQueue{
 	public function build(){
 
 
-		$message = $this->markdown('email.design.admin');
-			#->from(config('mail.admin.from'), config('mail.admin.name'))
-			#->replyTo($this->data['design']->client->email, $this->data['design']->client->name)
-			#->subject('Custom Design Form #D'.$this->data['design']->id);
+		$message = $this->markdown('email.design.admin')
+			->from(config('mail.admin.from'), config('mail.admin.name'))
+			->replyTo($this->data['design']->client->email, $this->data['design']->client->name)
+			->subject('Custom Design Form #D'.$this->data['design']->id);
 
 
 		if(count($this->data['design']->files) > 0){
