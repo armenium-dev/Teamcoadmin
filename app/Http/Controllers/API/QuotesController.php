@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-
+use App\MailLog;
 
 class QuotesController extends Controller {
     public $shopify;
@@ -67,18 +67,23 @@ class QuotesController extends Controller {
 		#$mailable->from(config('mail.admin.from'), config('mail.admin.name'));
 		$mailable->replyTo($quote->client->email, $quote->client->name);
 		$mailable->subject('Teamco Web Inquiry #'.$quote->id);
-	    Mail::to(config('mail.admin.to'))->later($when, $mailable);
+	    $res = Mail::to(config('mail.admin.to'))->later($when, $mailable);
+	    Log::stack(['test'])->debug($res);
 		unset($mailable);
 
 	    $mailable = new ClientMailable($mail_data);
 		#$mailable->from(config('mail.client.from'), config('mail.client.name'));
 		$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Web Inquiry - ['.$quote->client->name.'] - #'.$quote->id);
-	    Mail::to($quote->client->email)->later($when, $mailable);
+	    $res = Mail::to($quote->client->email)->later($when, $mailable);
+	    Log::stack(['test'])->debug($res);
 	    unset($mailable);
 
 		if($this->logging){
 		    $jobs = $this->get_jobs_count();
+			/*MailLog::create([
+			
+			])*/;
 			Log::stack(['custom'])->debug('// BEGIN _________________________________________');
 			Log::stack(['custom'])->debug(__CLASS__);
 			Log::stack(['custom'])->debug('Teamco Web Inquiry #'.$quote->id);
