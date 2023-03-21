@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('/static/view-sample', 'StaticController@getStaticFile');
 	Route::get('/static/artwork-placement-guide', 'StaticController@getStaticFile');
 	Route::get('/static/excel-roster-form', 'StaticController@getStaticFile');
+	Route::post('/quotes/resend', 'QuoteController@resend')->name('quote.resend');
 	#Route::get('/quotes/test', 'QuoteController@test')->name('quote.test');
 	Route::resource('/builder', 'BuilderController');
 	Route::resource('/sizes', 'SizeController');

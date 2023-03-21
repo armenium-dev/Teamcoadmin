@@ -9,7 +9,17 @@
 @section('content')
 <div class="card-body">
 	<div class="row">
-		<div class="col-md-12 text-center"><h4>Reference #{{ $quote->id }}</h4></div>
+		<div class="col-md-5 text-left"><h4>Web Inquiry #{{ $quote->id }}</h4></div>
+		<div class="col-md-7 text-right">
+			<form method="post" action="{{ route('quote.resend',$quote->id) }}">
+				@csrf
+				<input type="hidden" name="quote_id" value="{{ $quote->id }}">
+				<label class="">Resend Emails to:</label>
+				<label class="ml-3 mr-3">Client <input type="checkbox" name="send_email[]" value="client"></label>
+				<label class="ml-3 mr-3">Admin <input type="checkbox" name="send_email[]" value="admin"></label>
+				<button type="submit" class="btn btn-primary-custom btn-primary">Submit</button>
+			</form>
+		</div>
 	</div>
 	<hr>
 	@if (session('status'))

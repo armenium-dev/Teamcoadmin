@@ -95,7 +95,7 @@ return [
         ],
 
         'laravel' => [
-	        'driver' => 'daily',
+	        'driver' => 'single',
 	        'path' => storage_path('logs/laravel.log'),
 	        'level' => 'debug',
         ],
