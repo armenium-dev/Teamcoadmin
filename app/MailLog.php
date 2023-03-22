@@ -11,5 +11,6 @@ class MailLog extends Model{
 		'body',
 		'controller',
 		'job_id',
+		'fail_id',
 	];
 }

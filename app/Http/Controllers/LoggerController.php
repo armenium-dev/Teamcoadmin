@@ -41,7 +41,8 @@ class LoggerController extends Controller{
 			3 => 'controller',
 			4 => 'object_id',
 			5 => 'job_id',
-			6 => 'updated_at',
+			6 => 'fail_id',
+			7 => 'updated_at',
 		];
 		$query = MailLog::query();
 
@@ -50,11 +51,22 @@ class LoggerController extends Controller{
 		if(isset($request->search)){
 			if(!empty($request->search['value'])){
 
-				$phrase = $request->search['value'];
+				$phrase = trim($request->search['value']);
 				$like_phrase = "%".$phrase."%";
+				$sent_phrase = '';
+
+				$s = strtolower($phrase);
+
+				foreach($this->is_sent_status as $k => $v){
+					if(str_contains(strtolower($v), $s)){
+						$sent_phrase = $k;
+					}
+				}
 
 				#$query->where('id', '=', $phrase);
-				#$query->orWhere('sent', '=', $phrase);
+				if(!empty($sent_phrase)){
+					$query->orWhere('sent', '=', $sent_phrase);
+				}
 				$query->orWhere('object_id', '=', $phrase);
 				$query->orWhere('job_id', '=', $phrase);
 				$query->orWhere('controller', 'like', $like_phrase);
@@ -89,6 +101,7 @@ class LoggerController extends Controller{
 					str_replace('Controller', '', end($controller)),
 					$log->object_id,
 					$log->job_id,
+					$log->fail_id,
 					$log->updated_at->format('M d, Y - H:i'),
 					#$log->sent > 0 ? '<i class="fa fa-check"></i>': '<button class="js_check_status btn btn-info py-0 px-4" data-reference_id="'.$log->id.'" data-action="'.route('logger.check', $log->id).'" title="Check sent status"><i class="fa fa-check"></i></button>',
 				];
@@ -114,7 +127,8 @@ class LoggerController extends Controller{
 	public function checkAll(){
 		$res = ['checked' => 0, 'changed' => 0];
 
-		$logs = MailLog::where(['sent' => 0])->get();
+		#$logs = MailLog::where(['sent' => 0])->get();
+		$logs = MailLog::whereIn('sent', [0, 2])->get();
 
 		if($logs->count()){
 			foreach($logs as $log){
@@ -145,6 +159,8 @@ class LoggerController extends Controller{
 
 			if(!is_null($failed_job)){
 				$sent_status = 1;
+				$log->fail_id = $failed_job->id;
+				$log->save();
 			}
 		}
 
