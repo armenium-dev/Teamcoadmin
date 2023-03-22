@@ -90,7 +90,7 @@ class LoggerController extends Controller{
 					$log->object_id,
 					$log->job_id,
 					$log->updated_at->format('M d, Y - H:i'),
-					$log->sent > 0 ? '<i class="fa fa-check"></i>': '<button class="js_check_status btn btn-info py-0 px-4" data-reference_id="'.$log->id.'" data-action="'.route('logger.check', $log->id).'" title="Check sent status"><i class="fa fa-check"></i></button>',
+					#$log->sent > 0 ? '<i class="fa fa-check"></i>': '<button class="js_check_status btn btn-info py-0 px-4" data-reference_id="'.$log->id.'" data-action="'.route('logger.check', $log->id).'" title="Check sent status"><i class="fa fa-check"></i></button>',
 				];
 			}
 		}

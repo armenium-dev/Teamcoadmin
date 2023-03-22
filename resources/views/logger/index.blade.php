@@ -24,7 +24,7 @@
 				<th>Obj ID</th>
 				<th>Job ID</th>
 				<th>Updated</th>
-				<th data-sortable="false">Check</th>
+				<!--<th data-sortable="false">Check</th>-->
 			</tr>
 		</thead>
 		<tbody>
