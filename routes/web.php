@@ -52,6 +52,8 @@ Route::middleware('auth')->group(function(){
 	Route::get('/roster/parts', 'RosterController@parts')->name('roster.parts');
 	Route::get('/design/parts', 'DesignController@parts')->name('design.parts');
 	Route::get('/settings/parts', 'SettingsController@parts')->name('settings.parts');
+	Route::get('/logger/parts', 'LoggerController@parts')->name('logger.parts');
+	Route::post('/logger/check', 'LoggerController@checkOne')->name('logger.check');
 	Route::get('/static/view-sample', 'StaticController@getStaticFile');
 	Route::get('/static/artwork-placement-guide', 'StaticController@getStaticFile');
 	Route::get('/static/excel-roster-form', 'StaticController@getStaticFile');

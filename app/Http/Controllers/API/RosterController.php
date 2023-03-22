@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\SVG\arraysHelpers;
 use App\Mail\RosterAdminMailable;
 use App\Mail\RosterClientMailable;
+use App\MailLog;
 use App\quanity;
 use App\roster;
 use App\Size;
@@ -35,8 +36,8 @@ class RosterController extends Controller {
 	    //Log::stack(['single'])->debug(var_export($_POST, true));
 	    //return response()->json(['data'=>$_POST, 'message' => 'success' ],200);
 
-	    Log::stack(['custom'])->debug('// BEGIN _________________________________________');
-	    Log::stack(['custom'])->debug(__CLASS__);
+	    #Log::stack(['custom'])->debug('// BEGIN _________________________________________');
+	    #Log::stack(['custom'])->debug(__CLASS__);
 
 	    $ordered_sizes = [];
 	    $colors_sizes = [];
@@ -52,7 +53,7 @@ class RosterController extends Controller {
 		$billing = $client->billing()->create($request->billing);
     	$roster = $client->roster()->create($request->Roster);
 
-	    Log::stack(['custom'])->debug('Roster Form #'.$roster->id);
+	    #Log::stack(['custom'])->debug('Roster Form #'.$roster->id);
 
 	    // Данные из секции формы 2. Jersey Details
 	    $detail = $roster->jersey()->create([
@@ -268,13 +269,14 @@ class RosterController extends Controller {
 	    Log::stack(['single'])->debug(json_encode($data));
 	    $when = Carbon::now()->addSecond(30);
 
-	    Log::stack(['custom'])->debug('Adding admin mail to the jobs table');
+	    #Log::stack(['custom'])->debug('Adding admin mail to the jobs table');
 
 	    $mailable = new RosterAdminMailable($data);
 	    $mailable->replyTo($roster->client->email, $roster->client->name);
 		$mailable->subject('Roster Form #'.$roster->id);
-	    Mail::to(config('mail.admin.to'))->later($when, $mailable);
+		$job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
 	    unset($mailable);
+		MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
 	    if($request->environment == 'dev'){
 		    #Mail::to('armen@digidez.com')->send(new RosterAdminDevMailable($data));
@@ -282,17 +284,18 @@ class RosterController extends Controller {
 
 	    }
 
-	    Log::stack(['custom'])->debug('Adding client mail to the task table');
+	    #Log::stack(['custom'])->debug('Adding client mail to the task table');
 	    $mailable = new RosterClientMailable($data);
 		$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Roster Form #['.$roster->id.'] - ['.$roster->client->name.']');
-	    Mail::to($roster->client->email)->later($when, $mailable);
+		$job_id = Mail::to($roster->client->email)->later($when, $mailable);
 	    unset($mailable);
+		MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
-	    $jobs = $this->get_jobs_count();
-	    Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
+	    #$jobs = $this->get_jobs_count();
+	    #Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
 
-	    Log::stack(['custom'])->debug('// END');
+	    #Log::stack(['custom'])->debug('// END');
 
 	    return response()->json(['data' => $roster, 'message' => 'success'], 200);
     }

@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule){
 		//$schedule->command('syncsopifyproducts:run')->everyFiveMinutes();
 		$schedule->command('syncsopifyproducts:run')->twiceDaily(1, 13);
+		$schedule->command('checkmailsentstatus:run')->everyFiveMinutes();
 	}
 
 	/**

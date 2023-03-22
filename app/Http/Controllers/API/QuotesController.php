@@ -67,23 +67,20 @@ class QuotesController extends Controller {
 		#$mailable->from(config('mail.admin.from'), config('mail.admin.name'));
 		$mailable->replyTo($quote->client->email, $quote->client->name);
 		$mailable->subject('Teamco Web Inquiry #'.$quote->id);
-	    $res = Mail::to(config('mail.admin.to'))->later($when, $mailable);
-	    Log::stack(['test'])->debug($res);
+	    $job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
 		unset($mailable);
+		MailLog::create(['object_id' => $quote->id, 'body' => 'Teamco Web Inquiry for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
 	    $mailable = new ClientMailable($mail_data);
 		#$mailable->from(config('mail.client.from'), config('mail.client.name'));
 		$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Web Inquiry - ['.$quote->client->name.'] - #'.$quote->id);
-	    $res = Mail::to($quote->client->email)->later($when, $mailable);
-	    Log::stack(['test'])->debug($res);
+		$job_id = Mail::to($quote->client->email)->later($when, $mailable);
 	    unset($mailable);
+		MailLog::create(['object_id' => $quote->id, 'body' => 'Teamco Web Inquiry for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
-		if($this->logging){
+		/*if($this->logging){
 		    $jobs = $this->get_jobs_count();
-			/*MailLog::create([
-			
-			])*/;
 			Log::stack(['custom'])->debug('// BEGIN _________________________________________');
 			Log::stack(['custom'])->debug(__CLASS__);
 			Log::stack(['custom'])->debug('Teamco Web Inquiry #'.$quote->id);
@@ -91,7 +88,7 @@ class QuotesController extends Controller {
 			Log::stack(['custom'])->debug('Adding client mail to the task table');
 		    Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
 		    Log::stack(['custom'])->debug('// END');
-	    }
+	    }*/
 
         return response()->json(['data'=>$quote, 'message' => 'success' ],200);
     }

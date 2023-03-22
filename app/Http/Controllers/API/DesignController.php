@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\SVG\arraysHelpers;
 use App\Mail\DesignAdminMailable;
 use App\Mail\DesignClientMailable;
+use App\MailLog;
 use App\quanity;
 use App\Size;
 use Carbon\Carbon;
@@ -55,8 +56,9 @@ class DesignController extends Controller {
 	    $mailable = new DesignAdminMailable($data);
 	    $mailable->replyTo($design->client->email, $design->client->name);
 	    $mailable->subject('Custom Design Form #D'.$design->id);
-	    Mail::to(config('mail.admin.to'))->later($when, $mailable);
+		$job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
 	    unset($mailable);
+		MailLog::create(['object_id' => $design->id, 'body' => 'Design Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
 	    if($request->environment == 'dev'){
 		    #Mail::to('armen@digidez.com')->send(new DesignAdminMailable($data));
@@ -67,10 +69,11 @@ class DesignController extends Controller {
 	    $mailable = new DesignClientMailable($data);
 	    $mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 	    $mailable->subject('Teamco Custom Design Form #D'.$design->id.' - '.$design->client->name.'');
-	    Mail::to($design->client->email)->later($when, $mailable);
+		$job_id = Mail::to($design->client->email)->later($when, $mailable);
 	    unset($mailable);
+		MailLog::create(['object_id' => $design->id, 'body' => 'Design Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
-	    if($this->logging){
+	    /*if($this->logging){
 		    $jobs = $this->get_jobs_count();
 		    Log::stack(['custom'])->debug('// BEGIN _________________________________________');
 		    Log::stack(['custom'])->debug(__CLASS__);
@@ -80,7 +83,7 @@ class DesignController extends Controller {
 		    Log::stack(['custom'])->debug('Adding client mail to the task table');
 		    Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
 		    Log::stack(['custom'])->debug('// END');
-	    }
+	    }*/
 
 	    return response()->json(['data' => $design, 'message' => 'success'], 200);
     }

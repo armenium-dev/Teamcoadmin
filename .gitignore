@@ -2,6 +2,7 @@
 .idea
 *.zip
 *.sql
+*.txt
 /config/app.php
 /config/database.php
 /config/mail.php

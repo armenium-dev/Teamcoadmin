@@ -240,7 +240,7 @@ class SettingsController extends Controller{
     public function destroy($id){
         Settings::find($id)->delete();
 
-        return redirect('design')->with('status', 'Setting Destroyed');
+        return redirect('settings')->with('status', 'Setting Destroyed');
     }
     
     private function arrayToHtmlTable($data){

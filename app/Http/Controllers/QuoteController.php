@@ -6,6 +6,7 @@ use App\Mail\AdminMailable;
 use App\Mail\ClientMailable;
 use App\Mail\RosterAdminMailable;
 use App\Mail\RosterClientMailable;
+use App\MailLog;
 use App\roster;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -73,29 +74,31 @@ class QuoteController extends Controller{
 	public function send_mail_to($type, $data){
 		$when = Carbon::now()->addSecond(30);
 
-		Log::stack(['custom'])->debug('Adding '.$type.' mail to the task table');
+		#Log::stack(['custom'])->debug('Adding '.$type.' mail to the task table');
 
 		switch($type){
 			case "admin":
 				$mailable = new AdminMailable($data);
 				$mailable->replyTo($data['quote']->client->email, $data['quote']->client->name);
 				$mailable->subject('Teamco Web Inquiry #'.$data['quote']->id);
-				Mail::to(config('mail.admin.to'))->later($when, $mailable);
+				$job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
 				unset($mailable);
+				MailLog::create(['object_id' => $data['quote']->id, 'body' => 'Teamco Web Inquiry for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 				break;
 			case "client":
 				$mailable = new ClientMailable($data);
 				$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
 				$mailable->subject('Teamco Web Inquiry - ['.$data['quote']->client->name.'] - #['.$data['quote']->id.']');
-				Mail::to($data['quote']->client->email)->later($when, $mailable);
+				$job_id = Mail::to($data['quote']->client->email)->later($when, $mailable);
 				unset($mailable);
+				MailLog::create(['object_id' => $data['quote']->id, 'body' => 'Teamco Web Inquiry for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
 				break;
 		}
 
 		$jobs = $this->get_jobs_count();
-		Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
+		#Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
 
-		Log::stack(['custom'])->debug('// END');
+		#Log::stack(['custom'])->debug('// END');
 	}
 
 	public function test(){

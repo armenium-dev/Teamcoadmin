@@ -7,6 +7,7 @@ use App\country;
 use App\Http\SVG\arraysHelpers;
 use App\Mail\RosterAdminMailable;
 use App\Mail\RosterClientMailable;
+use App\MailLog;
 use App\quantity;
 use App\quote;
 use App\roster;
@@ -498,28 +499,30 @@ class RosterController extends Controller{
 	public function send_mail_to($type, $data){
 		$when = Carbon::now()->addSecond(30);
 		
-		Log::stack(['custom'])->debug('Adding '.$type.' mail to the task table');
+		#Log::stack(['custom'])->debug('Adding '.$type.' mail to the task table');
 		
 		switch($type){
 			case "admin":
 				$mailable = new RosterAdminMailable($data);
 				$mailable->replyTo($data['roster']->client->email, $data['roster']->client->name);
-				Mail::to(config('mail.admin.to'))->later($when, $mailable);
+				$job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
 				unset($mailable);
+				MailLog::create(['object_id' => $data['roster']->id, 'body' => 'Roster Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 				break;
 			case "client":
 				$mailable = new RosterClientMailable($data);
 				$mailable->subject('Teamco Roster Form #['.$data['roster']->id.'] - ['.$data['roster']->client->name.']');
 				$mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
-				Mail::to($data['roster']->client->email)->later($when, $mailable);
+				$job_id = Mail::to($data['roster']->client->email)->later($when, $mailable);
 				unset($mailable);
+				MailLog::create(['object_id' => $data['roster']->id, 'body' => 'Roster Form for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
 				break;
 		}
 		
-		$jobs = $this->get_jobs_count();
-		Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
+		#$jobs = $this->get_jobs_count();
+		#Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
 		
-		Log::stack(['custom'])->debug('// END');
+		#Log::stack(['custom'])->debug('// END');
 	}
 	
 	private function get_jobs_count(){
