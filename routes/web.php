@@ -33,6 +33,10 @@ Route::get('/', function(){
 	return view('welcome');
 });
 
+Route::get('/static/view-sample', 'StaticController@getStaticFile');
+Route::get('/static/artwork-placement-guide', 'StaticController@getStaticFile');
+Route::get('/static/excel-roster-form', 'StaticController@getStaticFile');
+
 Route::middleware('auth')->group(function(){
 	Route::get('list-users', 'Auth\RegisterController@index')->name('list.user');
 	Route::post('registerUsers', 'Auth\RegisterController@store')->name('register.user');
@@ -54,9 +58,6 @@ Route::middleware('auth')->group(function(){
 	Route::get('/settings/parts', 'SettingsController@parts')->name('settings.parts');
 	Route::get('/logger/parts', 'LoggerController@parts')->name('logger.parts');
 	Route::post('/logger/check', 'LoggerController@checkOne')->name('logger.check');
-	Route::get('/static/view-sample', 'StaticController@getStaticFile');
-	Route::get('/static/artwork-placement-guide', 'StaticController@getStaticFile');
-	Route::get('/static/excel-roster-form', 'StaticController@getStaticFile');
 	Route::post('/quotes/resend', 'QuoteController@resend')->name('quote.resend');
 	#Route::get('/quotes/test', 'QuoteController@test')->name('quote.test');
 	Route::resource('/builder', 'BuilderController');

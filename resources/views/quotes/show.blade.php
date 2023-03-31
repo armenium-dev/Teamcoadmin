@@ -16,7 +16,7 @@
 				<input type="hidden" name="quote_id" value="{{ $quote->id }}">
 				<label class="">Resend Emails to:</label>
 				<label class="ml-3 mr-3">Client <input type="checkbox" name="send_email[]" value="client"></label>
-				<label class="ml-3 mr-3">Admin <input type="checkbox" name="send_email[]" value="admin"></label>
+				<label class="ml-3 mr-3">Teamco <input type="checkbox" name="send_email[]" value="admin"></label>
 				<button type="submit" class="btn btn-primary-custom btn-primary">Submit</button>
 			</form>
 		</div>
