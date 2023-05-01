@@ -156,7 +156,23 @@ class ServicesController extends Controller {
 	}
 
 	public function getShippingServices(){
-		$data = collect([
+		$collection = collect();
+		
+		$ship_engine_services_options = Settings::get('ship_engine_services_options');
+		$ship_engine_services_options = json_decode($ship_engine_services_options, true);
+		
+		foreach($ship_engine_services_options as $k => $option)
+			if($option['status'] == 1)
+				$collection->push([
+					'id' => $k,
+					'name' => (!is_null($option['desc'])) ? sprintf('%s - %s', $option['desc'], $option['type']) : $option['type']
+				]);
+		
+		$data = $collection->sortBy('name');
+		
+		$data->prepend(["id" => 1, "name" => "Pickup (Markham, ON)"]);
+		
+		/*$data = collect([
 			//["id" => 0, "name" => "No Preference - Teamco will choose"],
 			["id" => 1, "name" => "Pickup (Markham, ON)"],
 			["id" => 2, "name" => "Canada Post - Expedited Parcel"],
@@ -167,7 +183,7 @@ class ServicesController extends Controller {
 			["id" => 7, "name" => "UPS Express"],
 			["id" => 8, "name" => "Purolator Ground"],
 			["id" => 9, "name" => "Purolator Express"],
-		]);
+		]);*/
 
 		return response()->json(['data' => $data]);
 	}
