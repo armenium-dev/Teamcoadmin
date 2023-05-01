@@ -95,6 +95,7 @@ class Rates extends ShipEngine{
 	
 	private function formatResults($data){
 		$results = $this->addPickupData();
+		$data = $this->removeUPSExpressSaver($data);
 		
 		foreach($data as $item){
 			$sc = trim($item['service_code']);
@@ -148,6 +149,7 @@ class Rates extends ShipEngine{
 					$delivery_days_label = 'business day';
 				}
 			}
+			
 			$results[$sc]['delivery_days'] = sprintf('%s %s%s', $delivery_days, $delivery_days_label, $delivery_days_suffix);
 			
 			if(isset($this->se_settings['services_options'][$sc])){
@@ -163,6 +165,50 @@ class Rates extends ShipEngine{
 		#dd($results);
 		
 		return $results;
+	}
+	
+	/**
+	 * removeUPSExpressSaver()
+	 *
+	 * Added an option for UPS Express Saver:
+	 * * If the API does not provide a transit time for a specific instance, then it can we program it, so that the transit time field shows as blank on the shipping results
+	 * * OR: if the API is providing "1 business day" as the transit time, can we program it so that:
+	 * ** UPS Express Saver can never have a transit time lower than that of UPS Express
+	 * ** If the UPS Express Saver shows a lower transit time than UPS Express, it is not displayed on the shipping results
+	 *
+	 * @param $data
+	 * @return mixed
+	 */
+	private function removeUPSExpressSaver($data){
+		#dd($data);
+		
+		$ups_next_day_air__delivery_days = 0;
+		$ups_next_day_air_saver__delivery_days = 0;
+		$ups_next_day_air_saver__key = 0;
+		
+		foreach($data as $k => $item){
+			$sc = trim($item['service_code']);
+			$delivery_days = intval($item['delivery_days']);
+			
+			# UPS Express
+			if($sc == 'ups_next_day_air'){
+				$ups_next_day_air__delivery_days = $delivery_days;
+			}
+			
+			# UPS Express Saver
+			if($sc == 'ups_next_day_air_saver'){
+				$ups_next_day_air_saver__delivery_days = $delivery_days;
+				$ups_next_day_air_saver__key = $k;
+			}
+		}
+		
+		if(is_numeric($ups_next_day_air_saver__delivery_days)){
+			if($ups_next_day_air_saver__delivery_days == 1 && $ups_next_day_air_saver__delivery_days < $ups_next_day_air__delivery_days){
+				unset($data[$ups_next_day_air_saver__key]);
+			}
+		}
+		
+		return $data;
 	}
 	
 	private function removeErrorFromResults($results){
@@ -233,7 +279,7 @@ class Rates extends ShipEngine{
 		
 		if($this->se_settings['display_pickup_service']){
 			$results['pickup'] = [
-				"error_messages" => "",
+				"error_messages" => [],
 				"service_type"   => "Pickup",
 				"delivery_days"  => "N/A",
 				"estimate"            => "N/A",

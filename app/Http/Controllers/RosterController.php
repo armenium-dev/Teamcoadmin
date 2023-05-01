@@ -344,6 +344,10 @@ class RosterController extends Controller{
 			'teams_empty_rows'  => 40 - count($roster->teams),
 		];
 		
+		/*if($roster->id > 2945){
+			$data['shipping_services'] = $this->getShippingServices();
+		}*/
+		
 		#dd($data['shipping_services']);
 		
 		return view('rosters.edit', $data);
