@@ -12,6 +12,7 @@ use App\quantity;
 use App\quote;
 use App\roster;
 use App\client;
+use App\Settings;
 use App\Size;
 use App\jersey_detail;
 use Carbon\Carbon;
@@ -44,7 +45,7 @@ class RosterController extends Controller{
 		'section_11' => ['title' => '11. Resend email to:'],
 	];
 	
-	private $shipping_services = [
+	/*private $shipping_services = [
 		["id" => 0, "name" => "No Preference - Teamco will choose"],
 		["id" => 1, "name" => "Pickup (Markham, ON)"],
 		["id" => 2, "name" => "Canada Post - Expedited Parcel"],
@@ -55,7 +56,7 @@ class RosterController extends Controller{
 		["id" => 7, "name" => "UPS Express"],
 		["id" => 8, "name" => "Purolator Ground"],
 		["id" => 9, "name" => "Purolator Express"],
-	];
+	];*/
 	
 	/**
 	 * Display a listing of the resource.
@@ -321,7 +322,7 @@ class RosterController extends Controller{
 		
 		$data = [
 			'roster'            => $roster,
-			'shipping_services' => $this->shipping_services,
+			'shipping_services' => $this->getShippingServices(),
 			'colors_sizes'      => $colors_sizes,
 			'states'            => $states,
 			'jersey_detail'     => $jersey_detail,
@@ -536,7 +537,25 @@ class RosterController extends Controller{
 		
 		return ['ids' => implode(', ', $ids), 'count' => $count];
 	}
-
-
+	
+	private function getShippingServices(){
+		$collection = collect();
+		
+		$ship_engine_services_options = Settings::get('ship_engine_services_options');
+		$ship_engine_services_options = json_decode($ship_engine_services_options, true);
+		
+		foreach($ship_engine_services_options as $k => $option)
+			if($option['status'] == 1)
+				$collection->push([
+					'id' => $k,
+					'name' => (!is_null($option['desc'])) ? sprintf('%s - %s', $option['desc'], $option['type']) : $option['type']
+				]);
+		
+		$data = $collection->sortBy('name');
+		
+		$data->prepend(["id" => 1, "name" => "Pickup (Markham, ON)"]);
+		
+		return response()->json(['data' => $data]);
+	}
 }
 
