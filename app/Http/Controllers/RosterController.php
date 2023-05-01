@@ -119,7 +119,9 @@ class RosterController extends Controller{
 					$item->client->name,
 					$item->client->company,
 					$item->created_at->format('M d, Y'),
-					'<a href="'.route('roster.show', $item->id).'" class="btn btn-primary">View Details</a>',
+					$item->quantitySumByType('top'),
+					$item->quantitySumByType('short'),
+					'<a href="'.route('roster.show', $item->id).'" class="btn btn-primary">View</a>',
 					'<a href="'.route('roster.edit', $item->id).'" class="btn btn-secondary">Edit</a>',
 					'<button class="btn btn-danger btn-remove" data-reference_id="'.$item->id.'" data-toggle="modal" data-target="#myModal" data-action="'.route('roster.destroy', $item->id).'" title="Delete"><i class="fa fa-trash"></i></button>',
 				];

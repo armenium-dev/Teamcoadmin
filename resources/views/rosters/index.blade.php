@@ -17,13 +17,15 @@
 		</button>
 	</div>
 	@endif
-	<table class="table table-striped text-center" id="table">
+	<table class="table table-striped" id="table">
 		<thead class="thead-dark">
 			<tr>
 				<th>Reference #</th>
 				<th>Name</th>
 				<th>Organization</th>
 				<th>Date Submitted</th>
+				<th data-sortable="false">Total Jerseys</th>
+				<th data-sortable="false">Total Shorts</th>
 				<th data-sortable="false">View</th>
 				<th data-sortable="false">Edit</th>
 				<th data-sortable="false">Delete</th>
@@ -68,7 +70,21 @@
 			"lengthMenu": [[10, 25, 50, 75, 100, -1], [10, 25, 50, 75, 100, "All"]],
 			"processing": true,
 			"serverSide": true,
-			"ajax": "/roster/parts"
+			"ajax": "/roster/parts",
+			"columnDefs": [
+				{ targets: [0], className: "text-nowrap"},
+			],
+			"columns": [
+				{className: "text-right"},
+				null,
+				null,
+				null,
+				{className: "text-right", order: false},
+				{className: "text-right"},
+				null,
+				null,
+				null,
+			]
 		});
 
 		$(document).on('click', '.btn-remove', function(e){
