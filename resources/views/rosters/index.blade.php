@@ -75,7 +75,7 @@
 				{ targets: [0], className: "text-nowrap"},
 			],
 			"columns": [
-				{className: "text-right"},
+				{className: "text-center"},
 				null,
 				null,
 				null,

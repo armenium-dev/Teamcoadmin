@@ -24,6 +24,19 @@ use Illuminate\Support\Facades\Mail;
 
 class RosterController extends Controller{
 	
+	private $shipping_services = [
+		["id" => 0, "name" => "No Preference - Teamco will choose"],
+		["id" => 1, "name" => "Pickup (Markham, ON)"],
+		["id" => 2, "name" => "Canada Post - Expedited Parcel"],
+		["id" => 3, "name" => "Canada Post - Xpresspost"],
+		["id" => 4, "name" => "Canada Post - Priority"],
+		["id" => 5, "name" => "UPS Standard"],
+		["id" => 6, "name" => "UPS Express Early"],
+		["id" => 7, "name" => "UPS Express"],
+		["id" => 8, "name" => "Purolator Ground"],
+		["id" => 9, "name" => "Purolator Express"],
+	];
+
 	private $default_settings = [
 		'section_1'  => ['title' => '1. Contact and Shipping Information'],
 		'section_2'  => ['title' => '2. Shipping Method'],
@@ -331,7 +344,7 @@ class RosterController extends Controller{
 			'teams_empty_rows'  => 40 - count($roster->teams),
 		];
 		
-		#dd($roster->files);
+		#dd($data['shipping_services']);
 		
 		return view('rosters.edit', $data);
 	}
@@ -557,7 +570,7 @@ class RosterController extends Controller{
 		
 		$data->prepend(["id" => 1, "name" => "Pickup (Markham, ON)"]);
 		
-		return response()->json(['data' => $data]);
+		return $data;
 	}
 }
 
