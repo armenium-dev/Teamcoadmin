@@ -150,7 +150,11 @@ class Rates extends ShipEngine{
 				}
 			}
 			
-			$results[$sc]['delivery_days'] = sprintf('%s %s%s', $delivery_days, $delivery_days_label, $delivery_days_suffix);
+			if($delivery_days == 0){
+				$results[$sc]['delivery_days'] = 'N/A';
+			}else{
+				$results[$sc]['delivery_days'] = sprintf('%s %s%s', $delivery_days, $delivery_days_label, $delivery_days_suffix);
+			}
 			
 			if(isset($this->se_settings['services_options'][$sc])){
 				$total_amount += $this->se_settings['services_options'][$sc]['rate'];
@@ -201,11 +205,13 @@ class Rates extends ShipEngine{
 				$ups_next_day_air_saver__key = $k;
 			}
 		}
-		
+		#dd($ups_next_day_air_saver__delivery_days);
 		if(is_numeric($ups_next_day_air_saver__delivery_days)){
 			if($ups_next_day_air_saver__delivery_days == 1 && $ups_next_day_air_saver__delivery_days < $ups_next_day_air__delivery_days){
 				unset($data[$ups_next_day_air_saver__key]);
 			}
+		}elseif(is_null($ups_next_day_air_saver__delivery_days)){
+			$data[$ups_next_day_air_saver__key] = 'N/A';
 		}
 		
 		return $data;
