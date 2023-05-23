@@ -573,6 +573,7 @@ class RosterController extends Controller{
 		$data = $collection->sortBy('name');
 		
 		$data->prepend(["id" => 1, "name" => "Pickup (Markham, ON)"]);
+		$data->prepend(["id" => '', "name" => "No Preference - Teamco will choose"]);
 		
 		return $data;
 	}
