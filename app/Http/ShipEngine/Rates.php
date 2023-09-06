@@ -3,9 +3,11 @@ namespace App\Http\ShipEngine;
 
 use App\Settings;
 use Illuminate\Support\Arr;
+use Carbon\Carbon;
 
-class Rates extends ShipEngine{
-	
+class Rates extends ShipEngine
+{
+
 	private $endpoint_url = '/rates/estimate';
 	private $request_pattern = [
 		"carrier_ids" => [],
@@ -22,16 +24,17 @@ class Rates extends ShipEngine{
 	private $lbs_per_units = ['low' => 0.5, 'high' => 1];
 	private $se_settings = [];
 	private $admin_view = false;
-	
+
 	public function setAdminView($value){
 		$this->admin_view = $value;
 	}
-	
-	public function getEstimateRates($params){
+
+	public function getEstimateRates($params)
+    {
 		$results = [];
 		$config = config('app.shipengine');
-		$this->getServiceOptions();
-		
+		$this->loadServiceOptions();
+
 		if(!empty($this->se_settings['carrier_ids'])){
 			$this->request_pattern['carrier_ids'] = $this->se_settings['carrier_ids'];
 		}else{
@@ -41,23 +44,23 @@ class Rates extends ShipEngine{
 		$this->request_pattern['from_country_code'] = !is_null($this->se_settings['from_country_code']) ? $this->se_settings['from_country_code'] : $config['SHIPENGINE_FROM_COUNTRY_CODE'];
 		$this->request_pattern['from_state_province'] = !is_null($this->se_settings['from_state_province']) ? $this->se_settings['from_state_province'] : $config['SHIPENGINE_FROM_STATE_PROVINCE'];
 		$this->request_pattern['from_postal_code'] = !is_null($this->se_settings['from_postal_code']) ? $this->se_settings['from_postal_code'] : $config['SHIPENGINE_FROM_POSTAL_CODE'];;
-		
+
 		$this->request_pattern['to_country_code'] = isset($params['to_country_code']) ? $params['to_country_code'] : $this->se_settings['to_country_code'];
 		$this->request_pattern['to_state_province'] = $params['to_state_province'];
 		$this->request_pattern['to_postal_code'] = $params['to_postal_code'];
-		
-		
+
+
 		$this->request_pattern['weight']['value'] = $params['units'] * floatval($this->se_settings['jersey_type_options'][$params['jersey_type']]['cost']);
-		#dd($this->request_pattern);
+		#dump($this->request_pattern);
 		$results = $this->post($this->endpoint_url, json_encode($this->request_pattern));
-		
+        #dd($results);
 		return ['raw' => $results, 'html' => $this->toHtml($results), 'desc' => $this->se_settings['result_description']];
 	}
-	
+
 	private function toHtml($data){
 		$html = '';
 		$rows = [];
-		
+
 		if(isset($data['errors'])){
 			foreach($data['errors'] as $error){
 				if($error['field_name'] == 'to_postal_code'){
@@ -67,7 +70,7 @@ class Rates extends ShipEngine{
 			}
 		}else{
 			$data = $this->formatResults($data);
-			
+
 			if(!empty($data)){
 				foreach($data as $id => $item){
 					if(!empty($item['error_messages'])){
@@ -86,44 +89,45 @@ class Rates extends ShipEngine{
 				}
 			}
 		}
-		
+
 		if(!empty($rows))
 			$html = implode(PHP_EOL, $rows);
 
 		return $html;
 	}
-	
+
 	private function formatResults($data){
 		$results = $this->addPickupData();
 		$data = $this->removeUPSExpressSaver($data);
-		
+
 		foreach($data as $item){
 			$sc = trim($item['service_code']);
-			
+
 			if($this->se_settings['display_only_specific_services']){
 				if(!isset($this->se_settings['services_options'][$sc])){
 					continue;
 				}
 			}
-			
+
 			if(isset($this->se_settings['services_options'][$sc]) && intval($this->se_settings['services_options'][$sc]['status']) == 0){
 				continue;
 			}
-			
+
 			if(!isset($results[$sc])){
 				$results[$sc] = [];
 			}
-			
+
+			$carrier_code       = $item['carrier_code'];
 			$delivery_days       = intval($item['delivery_days']);
 			$shipping_amount     = isset($item['shipping_amount']['amount']) ? floatval($item['shipping_amount']['amount']) : 0;
 			$insurance_amount    = isset($item['insurance_amount']['amount']) ? floatval($item['insurance_amount']['amount']) : 0;
 			$confirmation_amount = isset($item['confirmation_amount']['amount']) ? floatval($item['confirmation_amount']['amount']) : 0;
 			$other_amount        = isset($item['other_amount']['amount']) ? floatval($item['other_amount']['amount']) : 0;
-			
+
 			$total_amount = $shipping_amount + $insurance_amount + $confirmation_amount + $other_amount;
-			
+
 			$results[$sc]['error_messages'] = $item['error_messages'];
-			
+
 			$service_type   = $item['service_type'];
 			if(isset($this->se_settings['services_options'][$sc]) && $this->se_settings['services_options'][$sc]['type'] != $item['service_type']){
 				$service_type = $this->se_settings['services_options'][$sc]['type'];
@@ -133,13 +137,19 @@ class Rates extends ShipEngine{
 			}else{
 				$results[$sc]['service_type'] = $service_type;
 			}
-			
+
+            if($carrier_code == 'canada_post'){
+                if(is_null($item['delivery_days'])){
+                    $delivery_days = $this->calculateDeliveryDays($item);
+                }
+            }
+
 			$delivery_days_label = 'business day';
 			$delivery_days_suffix = ($delivery_days) == 1 ? '' : 's';
 			if(isset($this->se_settings['services_options'][$sc]) && isset($this->se_settings['services_options'][$sc]['transit_time'])){
 				if($this->se_settings['services_options'][$sc]['transit_time'] == 'cday'){
 					$delivery_days_label = 'calendar day';
-					
+
 					if($delivery_days > 2){
 						$delivery_days_label = 'business day';
 						$delivery_days = ($delivery_days - 2).'-'.($delivery_days + 1);
@@ -149,56 +159,58 @@ class Rates extends ShipEngine{
 					$delivery_days_label = 'business day';
 				}
 			}
-			
+
 			if($delivery_days == 0){
 				$results[$sc]['delivery_days'] = 'N/A';
 			}else{
 				$results[$sc]['delivery_days'] = sprintf('%s %s%s', $delivery_days, $delivery_days_label, $delivery_days_suffix);
 			}
-			
+
 			if(isset($this->se_settings['services_options'][$sc])){
 				$total_amount += $this->se_settings['services_options'][$sc]['rate'];
 			}
 			$results[$sc]['estimate'] = ($total_amount > 0) ? sprintf('$%s', $total_amount) : '-';
 			$results[$sc]['estimate_sort'] = $total_amount;
-			
+
 		}
-		
+
 		$results = $this->removeErrorFromResults($results);
 		$results = $this->sortResults($results);
 		#dd($results);
-		
+
 		return $results;
 	}
-	
+
 	/**
 	 * removeUPSExpressSaver()
 	 *
 	 * Added an option for UPS Express Saver:
-	 * * If the API does not provide a transit time for a specific instance, then it can we program it, so that the transit time field shows as blank on the shipping results
+	 * * If the API does not provide a transit time for a specific instance, then it can we program it,
+     * so that the transit time field shows as blank on the shipping results
 	 * * OR: if the API is providing "1 business day" as the transit time, can we program it so that:
 	 * ** UPS Express Saver can never have a transit time lower than that of UPS Express
-	 * ** If the UPS Express Saver shows a lower transit time than UPS Express, it is not displayed on the shipping results
+	 * ** If the UPS Express Saver shows a lower transit time than UPS Express,
+     * it is not displayed on the shipping results
 	 *
 	 * @param $data
 	 * @return mixed
 	 */
 	private function removeUPSExpressSaver($data){
 		#dd($data);
-		
+
 		$ups_next_day_air__delivery_days = 0;
 		$ups_next_day_air_saver__delivery_days = 0;
 		$ups_next_day_air_saver__key = 0;
-		
+
 		foreach($data as $k => $item){
 			$sc = trim($item['service_code']);
 			$delivery_days = intval($item['delivery_days']);
-			
+
 			# UPS Express
 			if($sc == 'ups_next_day_air'){
 				$ups_next_day_air__delivery_days = $delivery_days;
 			}
-			
+
 			# UPS Express Saver
 			if($sc == 'ups_next_day_air_saver'){
 				$ups_next_day_air_saver__delivery_days = $delivery_days;
@@ -213,37 +225,37 @@ class Rates extends ShipEngine{
 		}elseif(is_null($ups_next_day_air_saver__delivery_days)){
 			$data[$ups_next_day_air_saver__key] = 'N/A';
 		}
-		
+
 		return $data;
 	}
-	
+
 	private function removeErrorFromResults($results){
 		if(count($results) > 0){
 			unset($results[""]);
 		}
-		
+
 		return $results;
 	}
-	
+
 	private function sortResults($results){
 		foreach($results as $k => $v){
 			if(!isset($v['estimate'])) $results[$k]['estimate'] = 0;
 			if(!isset($v['estimate_sort'])) $results[$k]['estimate_sort'] = 0;
 		}
-		
+
 		$estimate_sort = array_column($results, 'estimate_sort');
 		array_multisort($estimate_sort, SORT_ASC, $results);
-		
+
 		return $results;
 	}
-	
-	private function getServiceOptions(){
-		
+
+	private function loadServiceOptions()
+    {
 		$service_settings = Settings::getLike('ship_engine_');
-		
+
 		foreach($service_settings as $key => $value){
 			$_key = str_replace('ship_engine_', '', $key);
-			
+
 			switch($_key){
 				case 'carrier_ids':
 					$this->se_settings[$_key] = array_map('trim', explode(',', $value));
@@ -276,13 +288,13 @@ class Rates extends ShipEngine{
 					break;
 			}
 		}
-		
+
 		#dd($this->se_settings);
 	}
-	
+
 	private function addPickupData(){
 		$results = [];
-		
+
 		if($this->se_settings['display_pickup_service']){
 			$results['pickup'] = [
 				"error_messages" => [],
@@ -292,8 +304,25 @@ class Rates extends ShipEngine{
 				"estimate_sort"       => 0,
 			];
 		}
-		
+
 		return $results;
 	}
-	
+
+    private function calculateDeliveryDays($shippingDataItem): int
+    {
+        $start_date = new Carbon($shippingDataItem['ship_date']);
+        $end_date = new Carbon($shippingDataItem['carrier_delivery_days']);
+
+        $deliveryDays = $start_date->diffInDays($end_date);
+
+        /*$deliveryDays = $start_date->diffInDaysFiltered(function(Carbon $date) {
+            return !$date->isWeekend();
+        }, $end_date);*/
+
+        if($end_date->isWeekend()){
+            #$deliveryDays += 2;
+        }
+
+        return $deliveryDays;
+    }
 }
