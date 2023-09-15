@@ -86,48 +86,48 @@
 		<div class="mt-20">
 			<h2>1. (b) Billing Information</h2>
 			<div>
-				<table>
-					<tr>
-						<td class="text_bold">Name:</td>
-						<td>{{ $data['billing']->name }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Organization:</td>
-						<td>{{ $data['billing']->company }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Address 1:</td>
-						<td>{{ $data['billing']->address }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Address 2:</td>
-						<td>{{ $data['billing']->address_2 }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">City:</td>
-						<td>{{ $data['billing']->city }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Prov/State:</td>
-						<td>{{ $data['billing']->state }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Postal Code:</td>
-						<td>{{ $data['billing']->zip }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Country:</td>
-						<td>{{ $data['billing']->country }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Email:</td>
-						<td>{{ $data['billing']->email }}</td>
-					</tr>
-					<tr>
-						<td class="text_bold">Phone:</td>
-						<td>{{ $data['billing']->phone }}</td>
-					</tr>
-				</table>
+                <table>
+                    <tr>
+                        <td class="text_bold">Name:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->name : ''}}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Organization:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->company : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Address 1:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->address : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Address 2:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->address_2 : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">City:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->city : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Prov/State:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->state : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Postal Code:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->zip : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Country:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->country : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Email:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->email : '' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text_bold">Phone:</td>
+                        <td>{{ isset($data['billing']) ? $data['billing']->phone : '' }}</td>
+                    </tr>
+                </table>
 			</div>
 		</div>
 		<div class="clear"></div>
@@ -212,7 +212,7 @@
 						    </tr>
 					    @endif
 					@empty
-					
+
 					@endforelse
 					<tr>
 						<td class="text_left">Total Quantity:</td>
@@ -279,6 +279,6 @@
 			</table>
 		</div>
     </div>
-</div>	
+</div>
 </body>
 </html>

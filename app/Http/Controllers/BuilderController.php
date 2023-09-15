@@ -9,6 +9,7 @@ use App\Http\SVG\arrayUtilities;
 use App\Http\SVG\lotSVGHelper;
 use App\Http\SVG\Svg;
 use App\Product;
+use App\roster;
 use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,9 +33,84 @@ class BuilderController extends Controller {
 
         #$Products = Product::paginate(10); #Commented by Armen
 
-	    $Products = Product::all(); #Added by Armen
+	    #$Products = Product::all(); #Added by Armen
+        $Products = [];
 
-        return view('builder.index',['Products'=>$Products]);
+        return view('builder.index', ['Products' => $Products]);
+    }
+
+    public function parts(Request $request){
+        $sort_cols = [
+            0 => 'products.id',
+            1 => 'products.name',
+        ];
+
+        $query = Product::query();
+
+        $query->select('*');
+
+        if(isset($request->search)){
+            if(!empty($request->search['value'])){
+
+                $phrase      = $request->search['value'];
+                $like_phrase = "%".$phrase."%";
+                $like_phrase_c = $phrase."%";
+
+                $colorsQuery = Color::query();
+                $colorsQuery->where('name', 'like', $like_phrase_c);
+                $colorsQuery->orWhere('value_code', 'like', $like_phrase);
+                $colorsData = $colorsQuery->get()->pluck('value_code');
+
+                $query->where('products.id', '=', $phrase);
+                $query->orWhere('products.name', 'like', $like_phrase);
+
+                if($colorsData->count())
+                    foreach ($colorsData as $valueCode)
+                        $query->orWhere('products.svg_info', 'like', "%".$valueCode."%");
+            }
+        }
+
+
+        if(isset($request->order)){
+            foreach($request->order as $order){
+                $query->orderBy($sort_cols[$order['column']], $order['dir']);
+            }
+        }
+
+        $query->offset($request->start);
+        $query->limit($request->length);
+
+        #dd($query->toSql());
+
+        $data        = $query->get();
+        $total_count = $query->getQuery()->getCountForPagination();
+
+        $roster = [];
+
+        if($data){
+            foreach($data->all() as $item)
+            {
+                $checked = isset($item->color_autoupdate) && $item->color_autoupdate == 1 ? 'checked="checked"' : '';
+                $roster[] = [
+                    $item->id,
+                    $item->name,
+                    '<input type="checkbox" data-id="'.$item->id.'" name="color_autoupdate" '.$checked.'>',
+                    '<a href="'.route('builder.edit', $item->id).'" class="btn btn-info text-light" title="Edit"><i class="fa fa-edit"></i></a>',
+                    '<button class="btn btn-danger btn-remove" data-product-id="'.$item->id.'" data-product-name="'.$item->name.'" data-toggle="modal" data-target="#myModal" data-action="'.route('builder.destroy', $item->id).'" title="Delete"><i class="fa fa-trash"></i></button>',
+                ];
+            }
+        }
+
+        $data = [
+            'draw'            => $request->draw,
+            'recordsTotal'    => $total_count,
+            'recordsFiltered' => $total_count,
+            'data'            => $roster,
+        ];
+
+        #dd($roster);
+
+        return response()->json($data, 200);
     }
 
     /**
@@ -44,7 +120,7 @@ class BuilderController extends Controller {
      */
 	public function create(){
 		$this->updateShopifyProductsTable();
-		
+
 		return view('builder.create');
 	}
 
@@ -231,8 +307,9 @@ class BuilderController extends Controller {
     public function destroy($id)
     {
         $product = Product::find($id);
-         File::Delete('jerseys/'.$product->url_svg.'.svg');
+        File::Delete('jerseys/' . $product->url_svg . '.svg');
         $product->find($id)->delete();
+
         return redirect('builder')->with('status', 'Product Destroyed');
     }
 
