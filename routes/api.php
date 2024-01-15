@@ -33,6 +33,7 @@ Route::get('getShippingServices','API\ServicesController@getShippingServices')->
 Route::post('getShippingRates','API\ServicesController@getShippingRates')->name('services.rates');
 Route::get('getShippingFormFields','API\ServicesController@getShippingFormFields')->name('services.fields');
 Route::get('getRosterStaticFiles','API\ServicesController@getRosterStaticFiles')->name('services.files');
+Route::get('getQuoteRequestLabels','API\ServicesController@getQuoteRequestLabels')->name('services.quote.labels');
 
 
 Route::post('quotes','API\QuotesController@create')->name('quotes.create');

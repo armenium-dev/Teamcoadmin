@@ -122,7 +122,7 @@ class SettingsController extends Controller{
      */
     public function show($id){
         $model = Settings::findOrFail($id);
-	
+
 	    switch($model->name){
 		    case "ship_engine_jersey_type_options":
 		    case "ship_engine_services_options":
@@ -130,8 +130,8 @@ class SettingsController extends Controller{
 			    #$model->value = '<pre>'.print_r(json_decode($model->value, true), true).'</pre>';
 			    break;
 	    }
-	
-	
+
+
 	    $data = ['model' => $model];
 
         return view('settings.show', $data);
@@ -151,13 +151,20 @@ class SettingsController extends Controller{
         $form = View::exists('settings.'.$name) ? 'settings.'.$name : 'settings.edit';
         $json_data = [];
 
+        if($form != 'settings.edit')
+            $json_data = json_decode($model->value, true);
+
         switch($model->name){
-            case "ship_engine_services_options":
-            case "ship_engine_jersey_type_options":
-                $json_data = json_decode($model->value, true);
+            case "quote_request_labels":
+				if(empty($json_data)){
+					$json_data = [
+						['id' =>  'form_sub_title', 'title' =>  'Form Sub title', 'value' => '', 'filling_target_attr' => 'text'],
+						['id' =>  'textarea_title', 'title' =>  'Textarea Title', 'value' => '', 'filling_target_attr' => 'text'],
+						['id' =>  'textarea_placeholder', 'title' =>  'Textarea Placeholder', 'value' => '', 'filling_target_attr' => 'placeholder'],
+					];
+				}
                 break;
             case "roster_form_files_options":
-                $json_data = json_decode($model->value, true);
 				if(empty($json_data)){
 					$json_data = [
 						['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => '', 'display' => true],
@@ -183,7 +190,7 @@ class SettingsController extends Controller{
 	    $request_data = $request->all();
     	$values = $request_data['value'];
     	#dd($values);
-    	
+
     	switch($request_data['name']){
 		    case 'roster_form_files_options':
 				foreach($values as $k => $v){
@@ -219,12 +226,12 @@ class SettingsController extends Controller{
 			    }
 			    break;
 	    }
-	    
+
 	    if(is_array($request_data['value'])){
 		    #dd($request_data);
 		    $request_data['value'] = json_encode($request_data['value']);
 	    }
-    	
+
         Settings::find($id)->update($request_data);
 
         return redirect('settings/'.$id.'/')->with('status', 'Setting updated');
@@ -242,7 +249,7 @@ class SettingsController extends Controller{
 
         return redirect('settings')->with('status', 'Setting Destroyed');
     }
-    
+
     private function arrayToHtmlTable($data){
     	$html = [];
     	$html[] = '<table class="table table-striped">';
@@ -250,8 +257,8 @@ class SettingsController extends Controller{
     		$html[] = sprintf('<tr><td>%s</td></tr>', implode('</td><td>', $v));
 	    }
     	$html[] = '</table>';
-    	
+
     	return implode(PHP_EOL, $html);
     }
-    
+
 }

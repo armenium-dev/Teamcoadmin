@@ -111,3 +111,6 @@ table.shipping-results tr td:nth-child(3) {text-align: right;}
 .btn {white-space: nowrap;}
 
 .float-title {margin: 0 auto; position: absolute; left: 0; right: 0; z-index: 1; width: 200px; text-align: center;}
+
+.w-title {width: 170px;}
+.w-current {width: 300px;}
