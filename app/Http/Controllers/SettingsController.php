@@ -160,6 +160,7 @@ class SettingsController extends Controller{
                     ['id' =>  'page_sub_title', 'title' =>  'Page Sub title', 'value' => '', 'filling_target_attr' => 'text'],
                     ['id' =>  'form_title', 'title' =>  'Form title', 'value' => '', 'filling_target_attr' => 'text'],
                     ['id' =>  'form_sub_title', 'title' =>  'Form Sub title', 'value' => '', 'filling_target_attr' => 'text'],
+                    ['id' =>  'form_fields_title', 'title' =>  'Form Fields title', 'value' => '', 'filling_target_attr' => 'text'],
                     ['id' =>  'textarea_title', 'title' =>  'Textarea Title', 'value' => '', 'filling_target_attr' => 'text'],
                     ['id' =>  'textarea_placeholder', 'title' =>  'Textarea Placeholder', 'value' => '', 'filling_target_attr' => 'placeholder'],
                 ];
