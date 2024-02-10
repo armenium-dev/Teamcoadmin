@@ -137,7 +137,6 @@ class SettingsController extends Controller{
         return view('settings.show', $data);
     }
 
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -149,33 +148,36 @@ class SettingsController extends Controller{
         $model = Settings::findOrFail($id);
 		$name = str_replace('_', '-', $model->name);
         $form = View::exists('settings.'.$name) ? 'settings.'.$name : 'settings.edit';
-        $json_data = [];
+        $jsonData = [];
 
         if($form != 'settings.edit')
-            $json_data = json_decode($model->value, true);
+            $jsonData = json_decode($model->value, true);
 
         switch($model->name){
             case "quote_request_labels":
-				if(empty($json_data)){
-					$json_data = [
-						['id' =>  'form_sub_title', 'title' =>  'Form Sub title', 'value' => '', 'filling_target_attr' => 'text'],
-						['id' =>  'textarea_title', 'title' =>  'Textarea Title', 'value' => '', 'filling_target_attr' => 'text'],
-						['id' =>  'textarea_placeholder', 'title' =>  'Textarea Placeholder', 'value' => '', 'filling_target_attr' => 'placeholder'],
-					];
-				}
+                $jsonDataDefault = [
+                    ['id' =>  'page_title', 'title' =>  'Page title', 'value' => '', 'filling_target_attr' => 'text'],
+                    ['id' =>  'page_sub_title', 'title' =>  'Page Sub title', 'value' => '', 'filling_target_attr' => 'text'],
+                    ['id' =>  'form_title', 'title' =>  'Form title', 'value' => '', 'filling_target_attr' => 'text'],
+                    ['id' =>  'form_sub_title', 'title' =>  'Form Sub title', 'value' => '', 'filling_target_attr' => 'text'],
+                    ['id' =>  'textarea_title', 'title' =>  'Textarea Title', 'value' => '', 'filling_target_attr' => 'text'],
+                    ['id' =>  'textarea_placeholder', 'title' =>  'Textarea Placeholder', 'value' => '', 'filling_target_attr' => 'placeholder'],
+                ];
+
+                $jsonData = $this->mergeSettingsData($jsonData, $jsonDataDefault);
                 break;
             case "roster_form_files_options":
-				if(empty($json_data)){
-					$json_data = [
-						['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => '', 'display' => true],
-						['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => '', 'display' => true],
-						['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => '', 'display' => true],
-					];
-				}
+                $jsonDataDefault = [
+                    ['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => '', 'display' => true],
+                    ['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => '', 'display' => true],
+                    ['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => '', 'display' => true],
+                ];
+
+                $jsonData = $this->mergeSettingsData($jsonData, $jsonDataDefault);
                 break;
         }
 
-        return view($form, ['settings' => $model, 'json_data' => $json_data]);
+        return view($form, ['settings' => $model, 'jsonData' => $jsonData]);
     }
 
     /**
@@ -261,4 +263,13 @@ class SettingsController extends Controller{
     	return implode(PHP_EOL, $html);
     }
 
+    private function mergeSettingsData($current, $default)
+    {
+        foreach ($default as $k => $v)
+            foreach ($current as $v1)
+                if ($v['id'] == $v1['id'])
+                    $default[$k]['value'] = $v1['value'];
+
+        return $default;
+    }
 }

@@ -41,7 +41,7 @@
                             <th class="w-title">Title</th>
                             <th>Value</th>
                         </tr>
-                    @foreach($json_data as $k => $v)
+                    @foreach($jsonData as $k => $v)
                         <tr>
                             <td>{{$v['title']}}</td>
                             <td>
