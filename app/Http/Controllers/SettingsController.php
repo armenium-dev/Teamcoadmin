@@ -168,13 +168,20 @@ class SettingsController extends Controller{
                 $jsonData = $this->mergeSettingsData($jsonData, $jsonDataDefault);
                 break;
             case "roster_form_files_options":
-                $jsonDataDefault = [
+                if(empty($jsonData)){
+                    $jsonData = [
+                        ['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => '', 'display' => true],
+                        ['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => '', 'display' => true],
+                        ['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => '', 'display' => true],
+                    ];
+                }
+                /*$jsonDataDefault = [
                     ['id' =>  'view_sample', 'title' =>  'View Sample', 'file' => '', 'display' => true],
                     ['id' =>  'artwork_placement_guide', 'title' =>  'Artwork placement guide', 'file' => '', 'display' => true],
                     ['id' =>  'excel_roster_form', 'title' =>  'Excel Roster Form', 'file' => '', 'display' => true],
                 ];
 
-                $jsonData = $this->mergeSettingsData($jsonData, $jsonDataDefault);
+                $jsonData = $this->mergeSettingsData($jsonData, $jsonDataDefault);*/
                 break;
         }
 
