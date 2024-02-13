@@ -46,7 +46,7 @@
                             <th>Status<br><small>(uncheck if you want to exclude from the results)</small></th>
                             <th>Action<br><small></small></th>
                         </tr>
-                    @foreach($json_data as $k => $v)
+                    @foreach($jsonData as $k => $v)
                         <tr>
                             <td><input type="text" class="form-control" name="value[{{$k}}][desc]" placeholder="Custom Description" value="{{$v['desc']}}"></td>
                             <td><input type="text" class="form-control" name="value[{{$k}}][type]" placeholder="service_type" value="{{$v['type']}}"></td>

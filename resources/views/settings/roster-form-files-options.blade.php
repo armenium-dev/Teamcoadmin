@@ -43,7 +43,7 @@
                             <th>Upload new one</th>
                             <th>Display in form</th>
                         </tr>
-                    @foreach($json_data as $k => $v)
+                    @foreach($jsonData as $k => $v)
                         <tr>
                             <td>{{$v['title']}}</td>
                             <td><a href="{!! asset('storage/'.$v['file']) !!}" target="_blank">{{basename($v['file'])}}</a></td>

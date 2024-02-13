@@ -43,7 +43,7 @@
                             <th>Status<br><small>(uncheck if you want to exclude from the form)</small></th>
                             <th>Action</th>
                         </tr>
-                    @foreach($json_data as $k => $v)
+                    @foreach($jsonData as $k => $v)
                         <tr>
                             <td><input type="text" class="form-control" name="value[{{$k}}][title]" placeholder="Option title" value="{{$v['title']}}"></td>
                             <td><input type="number" class="form-control" name="value[{{$k}}][cost]" placeholder="Cost coefficient" value="{{$v['cost']}}" step="any"></td>
