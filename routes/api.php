@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,3 +40,8 @@ Route::get('getQuoteRequestLabels','API\ServicesController@getQuoteRequestLabels
 Route::post('quotes','API\QuotesController@create')->name('quotes.create');
 Route::post('roster','API\RosterController@create')->name('quotes.create');
 Route::post('design','API\DesignController@create')->name('design.create');
+
+Route::get('roster/page','API\RosterController@page');
+Route::get('roster/page-data','API\RosterController@getPageData');
+Route::post('roster/verify-recaptcha','API\RosterController@verifyRecaptcha');
+

@@ -41,11 +41,19 @@ class Rates extends ShipEngine
 			return ['raw' => $results, 'html' => ''];
 		}
 
-		$this->request_pattern['from_country_code'] = !is_null($this->se_settings['from_country_code']) ? $this->se_settings['from_country_code'] : $config['SHIPENGINE_FROM_COUNTRY_CODE'];
-		$this->request_pattern['from_state_province'] = !is_null($this->se_settings['from_state_province']) ? $this->se_settings['from_state_province'] : $config['SHIPENGINE_FROM_STATE_PROVINCE'];
-		$this->request_pattern['from_postal_code'] = !is_null($this->se_settings['from_postal_code']) ? $this->se_settings['from_postal_code'] : $config['SHIPENGINE_FROM_POSTAL_CODE'];;
+		$this->request_pattern['from_country_code'] = !is_null($this->se_settings['from_country_code'])
+            ? $this->se_settings['from_country_code']
+            : $config['SHIPENGINE_FROM_COUNTRY_CODE'];
+		$this->request_pattern['from_state_province'] = !is_null($this->se_settings['from_state_province'])
+            ? $this->se_settings['from_state_province']
+            : $config['SHIPENGINE_FROM_STATE_PROVINCE'];
+		$this->request_pattern['from_postal_code'] = !is_null($this->se_settings['from_postal_code'])
+            ? $this->se_settings['from_postal_code']
+            : $config['SHIPENGINE_FROM_POSTAL_CODE'];;
 
-		$this->request_pattern['to_country_code'] = isset($params['to_country_code']) ? $params['to_country_code'] : $this->se_settings['to_country_code'];
+		$this->request_pattern['to_country_code'] = isset($params['to_country_code'])
+            ? $params['to_country_code']
+            : $this->se_settings['to_country_code'];
 		$this->request_pattern['to_state_province'] = $params['to_state_province'];
 		$this->request_pattern['to_postal_code'] = $params['to_postal_code'];
 

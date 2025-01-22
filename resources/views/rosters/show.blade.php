@@ -3,6 +3,8 @@
 <style type="text/css">
 	.fa-square:before {text-shadow: 1px 1px 2px #000000;}
 	@media print {
+        html, body {margin: 0.2in 0 !important;}
+        .card-header {display: none;}
 		table,
 		table th,
 		table thead th,

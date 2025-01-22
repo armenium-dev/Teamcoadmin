@@ -17,6 +17,7 @@ use App\client;
 use App\quote;
 use App\roster;
 use App\design;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AdminMailable;
 use App\Mail\ClientMailable;
@@ -38,6 +39,8 @@ Route::get('/static/artwork-placement-guide', 'StaticController@getStaticFile');
 Route::get('/static/excel-roster-form', 'StaticController@getStaticFile');
 
 Route::middleware('auth')->group(function(){
+    Route::get('/roster/form', 'RosterController@form');
+
 	Route::get('list-users', 'Auth\RegisterController@index')->name('list.user');
 	Route::post('registerUsers', 'Auth\RegisterController@store')->name('register.user');
 	Route::get('list-user/{id}/edit', 'Auth\RegisterController@edit')->name('edit.user');
@@ -116,6 +119,7 @@ Route::middleware('auth')->group(function(){
 
 		return new RosterClientMailable($data);
 	})->name('test.emails.rosterClient');
+
 });
 
 Auth::routes();
