@@ -48,9 +48,7 @@ class RosterClientMailable extends Mailable implements ShouldQueue
 
         if(count($this->data['roster']->files) >0){
             foreach($this->data['roster']->files as $file){
-                $message->attach(public_path($file->url), [
-                        'as' => $file->name
-                    ]);
+                $message->attach(public_path($file->url), ['as' => $file->name]);
             }
         }
         return $message;

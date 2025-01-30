@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class roster extends Model{
 
 	protected $fillable = [
+		'guid',
 		'reference',
 		'comments',
 		'number_color',
@@ -18,7 +19,7 @@ class roster extends Model{
 		'jersey_set_name',
 		'short_set_name'
 	];
-	
+
 	public static $default_settings = [
 		'section_1'  => ['title' => '1. Contact and Shipping Information'],
 		'section_2'  => ['title' => '2. Shipping Method'],
@@ -39,61 +40,61 @@ class roster extends Model{
 		'section_10'  => ['title' => '10. Attach Logo(s)'],
 		'section_11' => ['title' => '11. Resend email to:'],
 	];
-	
+
 	public static function boot(){
 		parent::boot();
-		
+
 		self::creating(function($model){
 			if(is_null($model->settings)){
 				$model->settings = json_encode(self::$default_settings);
 			}
 		});
-		
+
 		self::created(function($model){
 			// ... code here
 		});
-		
+
 		self::updating(function($model){
 			// ... code here
 		});
-		
+
 		self::updated(function($model){
 			// ... code here
 		});
-		
+
 		self::deleting(function($model){
 			// ... code here
 		});
-		
+
 		self::deleted(function($model){
 			// ... code here
 		});
 	}
-	
+
 	public function client(){
 		return $this->belongsTo(client::class);
 	}
-	
+
 	public function files(){
 		return $this->belongsToMany(file::class);
 	}
-	
+
 	public function jersey(){
 		return $this->hasOne(jersey_detail::class);
 	}
-	
+
 	public function quantities(){
 		return $this->hasMany(quantity::class);
 	}
-	
+
 	public function teams(){
 		return $this->hasMany(team::class);
 	}
-	
+
 	public function quantitySumByType($type){
 		$quantity = $this->hasMany(quantity::class)->where(['type' => $type]);
-		
+
 		return $quantity->sum('quantity');
 	}
-	
+
 }

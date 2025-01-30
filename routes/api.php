@@ -44,4 +44,5 @@ Route::post('design','API\DesignController@create')->name('design.create');
 Route::get('roster/page','API\RosterController@page');
 Route::get('roster/page-data','API\RosterController@getPageData');
 Route::post('roster/verify-recaptcha','API\RosterController@verifyRecaptcha');
+Route::post('roster/save','API\RosterController@save');
 
