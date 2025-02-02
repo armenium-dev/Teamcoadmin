@@ -393,7 +393,7 @@ class RosterController extends Controller{
 		billing::where(['client_id' => $request->client['id']])->update($request->billing);
 
 		# Updating jersey_detail entry
-		$jersey_detail           = $request->jersey_detail;
+		$jersey_detail = $request->jersey_detail;
 		$jersey_detail['colors'] = json_encode($jersey_detail['colors']);
 		jersey_detail::find($request->jersey_detail['id'])->update($jersey_detail);
 

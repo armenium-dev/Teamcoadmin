@@ -9,9 +9,10 @@ use App\Http\SVG\arraysHelpers;
 use App\Mail\RosterAdminMailable;
 use App\Mail\RosterClientMailable;
 use App\MailLog;
-use App\quanity;
+use App\billing;
 use App\roster;
 use App\Size;
+use App\jersey_detail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,22 +25,15 @@ class RosterController extends Controller
 
     private $editUrl = 'https://teamcosportswear.com/pages/roster-form?guid=%s';
     private $debug = false;
+    private $ordered_sizes = [];
+    private $colors_sizes = [];
 
     public function create(Request $request)
     {
         //dd($request->all());
 
-        $ordered_sizes = [];
-        $colors_sizes = [];
-        $Sizes = Size::orderBy('weight')->get();
-        foreach ($Sizes as $size) {
-            $ordered_sizes[$size->name] = $size->weight;
-            $colors_sizes[$size->name] = $size->color;
-        }
-        unset($Sizes, $size);
-
         $requestRoster = $request->Roster;
-        $requestRoster['guid'] = (string) Str::uuid();
+        $requestRoster['guid'] = md5(time().rand(1000, 9999));
 
         //dd($requestRoster);
 
@@ -50,156 +44,34 @@ class RosterController extends Controller
         #Log::stack(['custom'])->debug('Roster Form #'.$roster->id);
 
         // Данные из секции формы 3. Jersey Details
+        $colors = [];
+        if (isset($request->jerseyDetails['colors']))
+            foreach ($request->jerseyDetails['colors'] as $k => $color)
+                $colors[$k+1] = $color;
+
         $detail = $roster->jersey()->create([
             'style_code' => $request->jerseyDetails['style_code'],
-            'colors' => (isset($request->jerseyDetails['colors'])) ? json_encode($request->jerseyDetails['colors']) : ''
+            'colors' => json_encode($colors)
         ]);
 
         // Данные из секции формы 5. Jersey Quantities (Количество верхней одежды)
-        if (isset($request->quantity['quantity'])) {
-            $dataQty = [];
-            $qty = 0;
-            foreach ($request->quantity['quantity'] as $key => $quantity) {
-                if (!empty($quantity)) {
-                    $dataQty[$key] = [
-                        'quantity' => $quantity,
-                        'size' => $request->quantity['size'][$key],
-                        'type' => 'top'
-                    ];
-                    $qty += intval($quantity);
-                }
-            }
-            $roster->quantities()->createMany($dataQty);
-            $roster->top_quantity = $qty;
+        $quantityData = $this->formatQuantities($request, 'top');
+        if ($quantityData->qty) {
+            $roster->quantities()->createMany($quantityData->dataQty);
+            $roster->top_quantity = $quantityData->qty;
         }
 
         // Данные из секции формы 6. Shorts Quantities (Количество шортов)
-        if (isset($request->quantity_s['quantity_s'])) {
-            $dataQty = [];
-            $qty = 0;
-            foreach ($request->quantity_s['quantity_s'] as $key => $quantity) {
-                if (!empty($quantity)) {
-                    $dataQty[$key] = [
-                        'quantity' => $quantity,
-                        'size' => $request->quantity_s['size_s'][$key],
-                        'type' => 'short'
-                    ];
-                    $qty += intval($quantity);
-                }
-            }
-            $roster->quantities()->createMany($dataQty);
-            $roster->short_quantity = $qty;
+        $quantityData = $this->formatQuantities($request, 'short');
+        if ($quantityData->qty) {
+            $roster->quantities()->createMany($quantityData->dataQty);
+            $roster->short_quantity = $quantityData->qty;
         }
 
         // Данные из секции формы 7. Team Roster - новый код
-        $dataTeam = [];
-        if (isset($request->team['size'])) {
-            foreach ($request->team['size'] as $key => $size) {
-                $dataTeam[$key]['size'] = $size;
-                $dataTeam[$key]['number'] = '';
-                $dataTeam[$key]['name'] = '';
-                $dataTeam[$key]['note'] = '';
-                $dataTeam[$key]['shortsize'] = '';
-            }
-        }
-        if (isset($request->team['number'])) {
-            foreach ($request->team['number'] as $key => $size) {
-                $dataTeam[$key]['number'] = $request->team['number'][$key];
-                if (!isset($dataTeam[$key]['size'])) {
-                    $dataTeam[$key]['size'] = '';
-                }
-                if (!isset($dataTeam[$key]['shortsize'])) {
-                    $dataTeam[$key]['shortsize'] = '';
-                }
-                $dataTeam[$key]['name'] = '';
-                $dataTeam[$key]['note'] = '';
-            }
-        }
-        if (isset($request->team['name'])) {
-            foreach ($request->team['name'] as $key => $size) {
-                $dataTeam[$key]['name'] = $request->team['name'][$key];
-
-                if (!isset($dataTeam[$key]['size'])) {
-                    $dataTeam[$key]['size'] = '';
-                }
-                if (!isset($dataTeam[$key]['number'])) {
-                    $dataTeam[$key]['number'] = '';
-                }
-                if (!isset($dataTeam[$key]['shortsize'])) {
-                    $dataTeam[$key]['shortsize'] = '';
-                }
-                if (!isset($dataTeam[$key]['note'])) {
-                    $dataTeam[$key]['note'] = '';
-                }
-            }
-        }
-        if (isset($request->team['note'])) {
-            foreach ($request->team['note'] as $key => $size) {
-                $dataTeam[$key]['note'] = $request->team['note'][$key];
-
-                if (!isset($dataTeam[$key]['size'])) {
-                    $dataTeam[$key]['size'] = '';
-                }
-                if (!isset($dataTeam[$key]['number'])) {
-                    $dataTeam[$key]['number'] = '';
-                }
-                if (!isset($dataTeam[$key]['shortsize'])) {
-                    $dataTeam[$key]['shortsize'] = '';
-                }
-                if (!isset($dataTeam[$key]['name'])) {
-                    $dataTeam[$key]['name'] = '';
-                }
-            }
-        }
-        if (isset($request->team['shortsize'])) {
-            foreach ($request->team['shortsize'] as $key => $size) {
-                $dataTeam[$key]['shortsize'] = $request->team['shortsize'][$key];
-
-                if (!isset($dataTeam[$key]['size'])) {
-                    $dataTeam[$key]['size'] = '';
-                }
-                if (!isset($dataTeam[$key]['number'])) {
-                    $dataTeam[$key]['number'] = '';
-                }
-                if (!isset($dataTeam[$key]['name'])) {
-                    $dataTeam[$key]['name'] = '';
-                }
-                if (!isset($dataTeam[$key]['note'])) {
-                    $dataTeam[$key]['note'] = '';
-                }
-            }
-        }
+        $dataTeam = $this->formatTeams($request);
         if (!empty($dataTeam)) {
-            ksort($dataTeam);
-            reset($dataTeam);
-
-            // Сортировка по размеру
-            $_dataTeam = $dataTeam;
-            $dataTeam = [];
-            foreach ($ordered_sizes as $_size => $weight) {
-                foreach ($_dataTeam as $key => $_data) {
-                    if ($_data['size'] == $_size) {
-                        $_data['rowcolor'] = $colors_sizes[$_size];
-                        $dataTeam[] = $_data;
-                        unset($_dataTeam[$key]);
-                    }
-                    /*if(!isset($_data['rowcolor']) || $_data['rowcolor'] == ''){
-                        $_data['rowcolor'] = '#eeeeee';
-                    }*/
-                }
-            }
-            if (!empty($_dataTeam)) {
-                $dataTeam += $_dataTeam;
-            }
-            unset($_dataTeam);
-
-            foreach ($dataTeam as $k => $v)
-                if ($v['size'] == 'false' && empty($v['number']) && empty($v['name']) && empty($v['note']) && $v['shortsize'] == 'false')
-                    unset($dataTeam[$k]);
-            // end
-
             $roster->teams()->createMany($dataTeam);
-            //Log::debug($dataTeam);
         }
 
         // Данные из секции формы 8. Attach Logo(s)
@@ -222,153 +94,158 @@ class RosterController extends Controller
             'edit_link' => sprintf($this->editUrl, $requestRoster['guid']),
         ];
 
-        //Mail::to(config('mail.from.address'))->send(new RosterAdminMailable($data));
-        //Mail::to($roster->client->email)->send(new RosterClientMailable($data));
-
         Log::stack(['single'])->debug(json_encode($data));
 
-        if (!$this->debug) {
-            $when = Carbon::now()->addSecond(30);
+        $this->sendMail($data, $roster);
 
-            $mailable = new RosterAdminMailable($data);
-            $mailable->replyTo($roster->client->email, $roster->client->name);
-            $mailable->subject('Roster Form #' . $roster->id);
-            $job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
-            unset($mailable);
-            MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
-
-            $mailable = new RosterClientMailable($data);
-            $mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
-            $mailable->subject('Teamco Roster Form #[' . $roster->id . '] - [' . $roster->client->name . ']');
-            $job_id = Mail::to($roster->client->email)->later($when, $mailable);
-            unset($mailable);
-            MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
-        } else {
-            #Mail::to('armen@digidez.com')->send(new RosterAdminDevMailable($data));
-        }
-
-        #$jobs = $this->get_jobs_count();
-        #Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
-
-        #Log::stack(['custom'])->debug('// END');
-
-        return response()->json(['data' => $roster, 'message' => 'success'], 200);
+        return response()->json(['data' => $roster, 'message' => 'success', 'error' => 0], 200);
     }
 
     public function update(Request $request)
     {
-        //dd(json_encode($request->all()));
-        if ($this->debug) {
-            dd([
-                $request->Roster['comments'],
-                #$request->user,
-                #$request->designDetails,
-                #$request->files,
-            ]);
+        $guid = $request->guid;
 
-        }
+        $roster = roster::where('guid', $guid)->first();
+        $client = client::find($roster->client_id);
+        $billing = billing::where('client_id', $roster->client_id);
+        $jersey = jersey_detail::where('roster_id', $roster->id);
 
-        //Log::stack(['single'])->debug(var_export($_POST, true));
-        //return response()->json(['data'=>$_POST, 'message' => 'success' ],200);
+		# Updating current Roster entry
+		$roster->update($request->Roster);
 
-        #Log::stack(['custom'])->debug('// BEGIN _________________________________________');
-        #Log::stack(['custom'])->debug(__CLASS__);
+		# Updating current Client entry
+		$client->update($request->user);
 
-        $ordered_sizes = [];
-        $colors_sizes = [];
-        $Sizes = Size::orderBy('weight')->get();
-        foreach ($Sizes as $size) {
-            $ordered_sizes[$size->name] = $size->weight;
-            $colors_sizes[$size->name] = $size->color;
-        }
-        unset($Sizes, $size);
+		# Updating current Client Billing entry
+		$billing->update($request->billing);
 
-        $request->Roster->guid = (string) Str::uuid();
+        // 3. Jersey Details
+        $colors = [];
+        if (isset($request->jerseyDetails['colors']))
+            foreach ($request->jerseyDetails['colors'] as $k => $color)
+                $colors[$k+1] = $color;
 
-        $client = client::update($request->user);
-        $billing = $client->billing()->update($request->billing);
-        $roster = $client->roster()->update($request->Roster);
-
-        //$roster->guid = (string) Str::uuid();
-        //$roster->update();
-
-        #Log::stack(['custom'])->debug('Roster Form #'.$roster->id);
-
-        // Данные из секции формы 3. Jersey Details
-        $detail = $roster->jersey()->update([
+        $jersey->update([
             'style_code' => $request->jerseyDetails['style_code'],
-            'colors' => (isset($request->jerseyDetails['colors'])) ? json_encode($request->jerseyDetails['colors']) : ''
+            'colors' => json_encode($colors)
         ]);
 
-        // Данные из секции формы 5. Jersey Quantities (Количество верхней одежды)
-        if (isset($request->quantity['quantity'])) {
-            $dataQty = [];
-            $qty = 0;
-            foreach ($request->quantity['quantity'] as $key => $quantity) {
-                $dataQty[$key] = [
-                    'quantity' => $quantity,
-                    'size' => $request->quantity['size'][$key],
-                    'type' => 'top'
-                ];
-                $qty += intval($quantity);
-            }
-            /*$_dataQty = $dataQty;
-            $dataQty = [];
-            foreach($ordered_sizes as $_size => $weight){
-                foreach($_dataQty as $key => $_data){
-                    if($_data['size'] == $_size){
-                        $dataQty[] = $_data;
-                    }
-                }
-            }
-            unset($_dataQty);*/
-            $roster->quantities()->updateMany($dataQty);
-            $roster->top_quantity = $qty;
+        $roster->quantities()->delete();
+
+        // 5. Jersey Quantities
+        $quantityData = $this->formatQuantities($request, 'top');
+        if ($quantityData->qty) {
+            $roster->quantities()->createMany($quantityData->dataQty);
+            $roster->top_quantity = $quantityData->qty;
         }
 
-        // Данные из секции формы 6. Shorts Quantities (Количество шортов)
-        if (isset($request->quantity_s['quantity_s'])) {
-            $dataQty = [];
-            $qty = 0;
-            foreach ($request->quantity_s['quantity_s'] as $key => $quantity) {
-                $dataQty[$key] = [
-                    'quantity' => $quantity,
-                    'size' => $request->quantity_s['size_s'][$key],
-                    'type' => 'short'
-                ];
-                $qty += intval($quantity);
-            }
-            /*$_dataQty = $dataQty;
-            $dataQty = [];
-            foreach($ordered_sizes as $_size => $weight){
-                foreach($_dataQty as $key => $_data){
-                    if($_data['size'] == $_size){
-                        $dataQty[] = $_data;
-                    }
-                }
-            }
-            unset($_dataQty);*/
-            $roster->quantities()->updateMany($dataQty);
-            $roster->short_quantity = $qty;
+        // 6. Shorts Quantities
+        $quantityData = $this->formatQuantities($request, 'short');
+        if ($quantityData->qty) {
+            $roster->quantities()->createMany($quantityData->dataQty);
+            $roster->short_quantity = $quantityData->qty;
         }
 
-        // Данные из секции формы 7. Team Roster - старый код
-        /*if(isset($request->team['size'])){
-            $dataTeam = [];
-            foreach($request->team['size'] as $key => $size){
-                if($size != 'false'){
-				    $dataTeam[$key] = [
-					    'size'   => $size,
-					    'number' => (isset($request->team['number'][$key]) ? $request->team['number'][$key] : ''),
-					    'name'   => (isset($request->team['name'][$key]) ? $request->team['name'][$key] : '')
-				    ];
-			    }
-            }
+        $roster->teams()->delete();
 
+        // 7. Team Roster
+        $dataTeam = $this->formatTeams($request);
+        if (!empty($dataTeam)) {
             $roster->teams()->createMany($dataTeam);
-        }*/
+        }
 
-        // Данные из секции формы 7. Team Roster - новый код
+		# Removing selected files
+		if(isset($request->remove_file_roster)){
+			foreach($request->remove_file_roster as $fid){
+				$roster->files()->find($fid)->delete();
+			}
+		}
+
+        // 8. Attach Logo(s)
+        if ($request->files->count() > 0) {
+            $data = arraysHelpers::saveFiles($request);
+            $roster->files()->sync($data);
+        }
+
+        if (!isset($request->environment)) {
+            $request->environment = 'live';
+        }
+
+        //$roster->settings = roster::$default_settings;
+
+        $data = [
+            'environment' => $request->environment,
+            'roster' => $roster,
+            'billing' => $billing,
+            'jersey_detail' => json_decode($roster->jersey->colors),
+            'edit_link' => sprintf($this->editUrl, $request->guid),
+        ];
+
+        Log::stack(['single'])->debug(json_encode($data));
+
+        $this->sendMail($data, $roster);
+
+        return response()->json(['data' => $roster, 'message' => 'success', 'error' => 0], 200);
+    }
+
+    public function save(Request $request) {
+        $this->debug = $request->environment == 'dev';
+
+        //dd($request->all());
+
+        $this->setSizes();
+
+        if ($request->guid) {
+            return $this->update($request);
+        } else {
+            return $this->create($request);
+        }
+
+        return response()->json(['data' => [], 'message' => 'error', 'error' => 1], 404);
+    }
+
+    private function setSizes()
+    {
+        $Sizes = Size::orderBy('weight')->get();
+
+        foreach ($Sizes as $size) {
+            $this->ordered_sizes[$size->name] = $size->weight;
+            $this->colors_sizes[$size->name] = $size->color;
+        }
+    }
+
+    private function formatQuantities($request, $type = 'top')
+    {
+        $dataQty = [];
+        $qty = 0;
+
+        switch ($type) {
+            case "top":
+                $requestData = $request->quantity;
+                break;
+            case "short":
+                $requestData = $request->quantity_s;
+                break;
+        }
+
+        if (isset($requestData['quantity'])) {
+            foreach ($requestData['quantity'] as $key => $quantity) {
+                if (!empty($quantity)) {
+                    $dataQty[$key] = [
+                        'quantity' => $quantity,
+                        'size' => $requestData['size'][$key],
+                        'type' => $type
+                    ];
+                    $qty += intval($quantity);
+                }
+            }
+        }
+
+        return (object) ['dataQty' => $dataQty, 'qty' => $qty];
+    }
+
+    private function formatTeams($request)
+    {
         $dataTeam = [];
         if (isset($request->team['size'])) {
             foreach ($request->team['size'] as $key => $size) {
@@ -453,104 +330,50 @@ class RosterController extends Controller
             // Сортировка по размеру
             $_dataTeam = $dataTeam;
             $dataTeam = [];
-            foreach ($ordered_sizes as $_size => $weight) {
+            foreach ($this->ordered_sizes as $_size => $weight) {
                 foreach ($_dataTeam as $key => $_data) {
                     if ($_data['size'] == $_size) {
-                        $_data['rowcolor'] = $colors_sizes[$_size];
+                        $_data['rowcolor'] = $this->colors_sizes[$_size];
                         $dataTeam[] = $_data;
                         unset($_dataTeam[$key]);
                     }
-                    /*if(!isset($_data['rowcolor']) || $_data['rowcolor'] == ''){
-                        $_data['rowcolor'] = '#eeeeee';
-                    }*/
                 }
             }
             if (!empty($_dataTeam)) {
                 $dataTeam += $_dataTeam;
             }
             unset($_dataTeam);
+
+            foreach ($dataTeam as $k => $v)
+                if ($v['size'] == 'false' && empty($v['number']) && empty($v['name']) && empty($v['note']) && $v['shortsize'] == 'false')
+                    unset($dataTeam[$k]);
             // end
-
-            $roster->teams()->createMany($dataTeam);
-            //Log::debug($dataTeam);
         }
 
-
-        // Данные из секции формы 8. Attach Logo(s)
-        if ($request->files->count() > 0) {
-            $data = arraysHelpers::saveFiles($request);
-            $roster->files()->sync($data);
-        }
-
-        if (!isset($request->environment)) {
-            $request->environment = 'live';
-        }
-
-        /*$roster->admin_template = 'email.roster.admin';
-        $roster->client_template = 'email.roster.client';
-        if($request->environment == 'dev'){
-            $roster->admin_template = 'email.roster.preview.admin';
-            $roster->client_template = 'email.roster.preview.client';
-        }*/
-
-        $roster->settings = roster::$default_settings;
-
-        $data = [
-            'environment' => $request->environment,
-            'roster' => $roster,
-            'billing' => $billing,
-            'jersey_detail' => json_decode($roster->jersey->colors)
-        ];
-
-        //Mail::to(config('mail.from.address'))->send(new RosterAdminMailable($data));
-        //Mail::to($roster->client->email)->send(new RosterClientMailable($data));
-
-        Log::stack(['single'])->debug(json_encode($data));
-        $when = Carbon::now()->addSecond(30);
-
-        #Log::stack(['custom'])->debug('Adding admin mail to the jobs table');
-
-        $mailable = new RosterAdminMailable($data);
-        $mailable->replyTo($roster->client->email, $roster->client->name);
-        $mailable->subject('Roster Form #' . $roster->id);
-        $job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
-        unset($mailable);
-        MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
-
-        if ($request->environment == 'dev') {
-            #Mail::to('armen@digidez.com')->send(new RosterAdminDevMailable($data));
-        } else {
-
-        }
-
-        #Log::stack(['custom'])->debug('Adding client mail to the task table');
-        $mailable = new RosterClientMailable($data);
-        $mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
-        $mailable->subject('Teamco Roster Form #[' . $roster->id . '] - [' . $roster->client->name . ']');
-        $job_id = Mail::to($roster->client->email)->later($when, $mailable);
-        unset($mailable);
-        MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
-
-        #$jobs = $this->get_jobs_count();
-        #Log::stack(['custom'])->debug('Tasks in table: count('.$jobs['count'].'), ids('.$jobs['ids'].')');
-
-        #Log::stack(['custom'])->debug('// END');
-
-        return response()->json(['data' => $roster, 'message' => 'success'], 200);
+        return $dataTeam;
     }
 
-    public function save(Request $request) {
-        $this->debug = $request->environment == 'dev';
+    private function sendMail($data, $roster)
+    {
+        if (!$this->debug) {
+            $when = Carbon::now()->addSecond(30);
 
-        //dd($request->all());
+            $mailable = new RosterAdminMailable($data);
+            $mailable->replyTo($roster->client->email, $roster->client->name);
+            $mailable->subject('Roster Form #' . $roster->id);
+            $job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
+            unset($mailable);
+            MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
-        if ($request->guid) {
-            return $this->update($request);
+            $mailable = new RosterClientMailable($data);
+            $mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
+            $mailable->subject('Teamco Roster Form #[' . $roster->id . '] - [' . $roster->client->name . ']');
+            $job_id = Mail::to($roster->client->email)->later($when, $mailable);
+            unset($mailable);
+            MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
         } else {
-            return $this->create($request);
+            #Mail::to('armen@digidez.com')->send(new RosterAdminDevMailable($data));
         }
-
-        return response()->json(['data' => [], 'message' => 'error'], 404);
     }
 
     private function get_jobs_count()
