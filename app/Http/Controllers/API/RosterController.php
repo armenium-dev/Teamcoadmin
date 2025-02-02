@@ -121,15 +121,17 @@ class RosterController extends Controller
 
         // 3. Jersey Details
         $colors = [];
-        if (isset($request->jerseyDetails['colors']))
-            foreach ($request->jerseyDetails['colors'] as $k => $color)
-                $colors[$k+1] = $color;
-
+        if (isset($request->jerseyDetails['colors'])) {
+            foreach ($request->jerseyDetails['colors'] as $k => $color) {
+                $colors[$k + 1] = $color;
+            }
+        }
         $jersey->update([
             'style_code' => $request->jerseyDetails['style_code'],
             'colors' => json_encode($colors)
         ]);
 
+        // 5. Jersey Quantities + 6. Shorts Quantities
         $roster->quantities()->delete();
 
         // 5. Jersey Quantities
@@ -146,9 +148,9 @@ class RosterController extends Controller
             $roster->short_quantity = $quantityData->qty;
         }
 
+        // 7. Team Roster
         $roster->teams()->delete();
 
-        // 7. Team Roster
         $dataTeam = $this->formatTeams($request);
         if (!empty($dataTeam)) {
             $roster->teams()->createMany($dataTeam);
