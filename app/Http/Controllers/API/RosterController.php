@@ -32,6 +32,9 @@ class RosterController extends Controller
     {
         //dd($request->all());
 
+        if (empty($this->ordered_sizes))
+            $this->setSizes();
+
         $requestRoster = $request->Roster;
         $requestRoster['guid'] = md5(time().rand(1000, 9999));
 
