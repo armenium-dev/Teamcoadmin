@@ -27,9 +27,9 @@ class roster extends Model{
 		'section_4'  => ['title' => '4. Accessory Items'],
 		'section_5'  => ['title' => '5. Number Colors'],
 		'section_6'  => ['title' => '6. Artwork Placement and Order Description'],
-		'section_7'  => ['title' => '7. Jersey Quantities'],
-		'section_8'  => ['title' => '8. Shorts or Socks Quantities'],
-		'section_9'  => ['title' => '9. Team Roster', 'table_head' => [
+		'section_7'  => ['title' => '8. Jersey Quantities'],
+		'section_8'  => ['title' => '9. Shorts or Socks Quantities'],
+		'section_9'  => ['title' => '10. Team Roster', 'table_head' => [
 			'head_1' => '-',
 			'head_2' => 'Jersey Size',
 			'head_3' => 'Jersey #',
@@ -37,8 +37,8 @@ class roster extends Model{
 			'head_5' => 'Notes',
 			'head_6' => 'Shorts Size',
 		]],
-		'section_10'  => ['title' => '10. Attach Logo(s)'],
-		'section_11' => ['title' => '11. Resend email to:'],
+		'section_10'  => ['title' => '11. Attach Logo(s)'],
+		'section_11' => ['title' => '12. Resend email to:'],
 	];
 
 	public static function boot(){
