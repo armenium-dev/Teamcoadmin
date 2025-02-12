@@ -25,7 +25,7 @@
 		<div class="col-md-12 text-center d-flex justify-content-between align-items-center">
             <a href="https://teamcosportswear.com/pages/roster-form?guid={{$roster->guid}}">Edit link for User</a>
             <h4 class="flex-1">Roster #{{ $roster->id }}</h4>
-            <a href="{{route('roster.edit', $roster->id)}}">Edit link for Admin</a>
+            <a href="{{route('roster.edit', $roster->id)}}">Internal Edit link</a>
         </div>
 	</div>
 	<hr>
