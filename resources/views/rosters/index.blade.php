@@ -20,12 +20,13 @@
 	<table class="table table-striped" id="table">
 		<thead class="thead-dark">
 			<tr>
-				<th>Reference #</th>
+				<th title="Reference #">Ref. #</th>
 				<th>Name</th>
 				<th>Organization</th>
 				<th>Date Submitted</th>
 				<th data-sortable="false">Total Jerseys</th>
 				<th data-sortable="false">Total Shorts</th>
+				<th>Status</th>
 				<th data-sortable="false">View</th>
 				<th data-sortable="false">Edit</th>
 				<th data-sortable="false">Delete</th>
@@ -81,6 +82,7 @@
 				null,
 				{className: "text-right", order: false},
 				{className: "text-right"},
+				{className: "text-center"},
 				null,
 				null,
 				null,
@@ -97,6 +99,30 @@
 				.find('#reference_id').find('span').text(reference_id);
 
 		});
+
+        /*$(document).on('click', '.btn-copy', function(e){
+            const $source = $($btn.data('source')),
+                text = $source.text();
+
+            if(navigator && navigator.clipboard && navigator.clipboard.writeText){
+                return navigator.clipboard.writeText(text);
+            }else{
+                const el = document.createElement('textarea');
+                el.value = text;
+                el.setAttribute('readonly', '');
+                el.style.position = 'absolute';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
+
+            $source.addClass('copied-text');
+            setTimeout(function(){
+                $source.removeClass('copied-text');
+            }, 3000);
+        });*/
 	});
 </script>
 @endsection

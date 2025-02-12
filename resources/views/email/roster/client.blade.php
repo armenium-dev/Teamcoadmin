@@ -26,9 +26,16 @@
 <div class="container">
 	<div class="ml-10">
 		<h1>ROSTER FORM # {{$data['roster']->id}} - {{ $data['roster']->client->name }} - {{$data['roster']->client->company}}</h1>
+        @if(isset($data['thank_text']))
+		<p class="fs12">{{$data['thank_text']}}</p>
+        @else
 		<p class="fs12">Thank you for submitting your TEAMCO Roster Form. We will review it and get back to you within 1-3 business days - depending on seasonal demand.</p>
+        @endif
         @if(isset($data['edit_link']))
-		<p class="fs12">To edit your Roster Form please <a href="{{$data['edit_link']}}">click here</a></p>
+		<p class="fs12">To edit and submit your Roster Form, please <a href="{{$data['edit_link']}}">click here</a></p>
+        @endif
+        @if(isset($data['edit_text']))
+		<p class="fs12">{{$data['edit_text']}}</p>
         @endif
 		<p class="fs12">Please retain this email as confirmation.</p>
 	</div>

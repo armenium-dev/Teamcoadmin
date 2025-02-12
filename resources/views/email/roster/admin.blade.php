@@ -26,9 +26,6 @@
 	<!--<div><h1>TEAMCO<br>INCOMING ROSTER FORM - {{ $data['roster']->client->company }}<br>Roster Form - Sublimation</h1></div>-->
 	<div class="ml-10">
 		<h1>ROSTER FORM # {{$data['roster']->id}} - {{ $data['roster']->client->name }} - {{$data['roster']->client->company}}</h1>
-        @if(isset($data['edit_link']))
-		<p class="fs12">To edit your Roster Form please <a href="{{$data['edit_link']}}">click here</a></p>
-        @endif
 	</div>
 	<div class="clear"></div>
 	<div class="roster_attach"></div>

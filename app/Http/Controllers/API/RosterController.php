@@ -27,6 +27,12 @@ class RosterController extends Controller
     private $debug = false;
     private $ordered_sizes = [];
     private $colors_sizes = [];
+    private $action = 'submit';
+    private $statusId = 0;
+    private $mailSubjects = [
+        'admin' => 'Roster Form #[ROSTER_ID]',
+        'client' => 'Teamco Roster Form #[ROSTER_ID] - [CLIENT_NAME]',
+    ];
 
     public function create(Request $request)
     {
@@ -37,6 +43,7 @@ class RosterController extends Controller
 
         $requestRoster = $request->Roster;
         $requestRoster['guid'] = md5(time().rand(1000, 9999));
+        $requestRoster['status'] = $this->statusId;
 
         //dd($requestRoster);
 
@@ -89,17 +96,24 @@ class RosterController extends Controller
 
         $roster->settings = roster::$default_settings;
 
+        foreach ($this->mailSubjects as $k => $v)
+            $this->mailSubjects[$k] = str_replace(['ROSTER_ID', 'CLIENT_NAME'], [$roster->id, $roster->client->name], $v);
+
         $data = [
             'environment' => $request->environment,
             'roster' => $roster,
             'files' => $roster->files,
             'billing' => $billing,
             'jersey_detail' => json_decode($roster->jersey->colors),
-            //'edit_link' => sprintf($this->editUrl, $requestRoster['guid']),
+            'edit_link' => null,
+            'edit_text' => null,
+            'subjects' => $this->mailSubjects,
         ];
 
-        if ($request->environment == 'dev')
+        if ($this->action == 'save') {
             $data['edit_link'] = sprintf($this->editUrl, $requestRoster['guid']);
+            $data['edit_text'] = 'Below is the current draft Roster';
+        }
 
         Log::stack(['single'])->debug(json_encode($data));
 
@@ -112,13 +126,19 @@ class RosterController extends Controller
     {
         $guid = $request->guid;
 
+        $requestRoster = $request->Roster;
+        $requestRoster['status'] = $this->statusId;
+
+        if ($this->action == 'submit')
+            $requestRoster['guid'] = md5(time().rand(1000, 9999));
+
         $roster = roster::where('guid', $guid)->first();
         //$client = client::find($roster->client_id);
         //$billing = billing::where('client_id', $roster->client_id);
         //$jersey = jersey_detail::where('roster_id', $roster->id);
 
 		# Updating current Roster entry
-		$roster->update($request->Roster);
+		$roster->update($requestRoster);
 
 		# Updating current Client entry
 		//$client->update($request->user);
@@ -182,17 +202,26 @@ class RosterController extends Controller
 
         //$roster->settings = roster::$default_settings;
 
+        foreach ($this->mailSubjects as $k => $v)
+            $this->mailSubjects[$k] = str_replace(['ROSTER_ID', 'CLIENT_NAME'], [$roster->id, $roster->client->name], $v);
+
         $data = [
             'environment' => $request->environment,
             'roster' => $roster,
             'files' => $roster->files,
             //'billing' => $billing,
             'jersey_detail' => json_decode($roster->jersey->colors),
-            //'edit_link' => sprintf($this->editUrl, $request->guid),
+            'edit_link' => null,
+            'edit_text' => null,
+            'subjects' => $this->mailSubjects,
         ];
 
-        if ($request->environment == 'dev')
+        if ($this->action == 'save') {
             $data['edit_link'] = sprintf($this->editUrl, $request->guid);
+            $data['edit_text'] = 'Below is the current draft Roster';
+        } elseif ($this->action == 'revise') {
+            $data['thank_text'] = 'Thank you for submitting your revised Roster Form';
+        }
 
         Log::stack(['single'])->debug(json_encode($data));
 
@@ -203,8 +232,27 @@ class RosterController extends Controller
 
     public function save(Request $request) {
         $this->debug = $request->environment == 'dev';
+        $this->action = $request->action;
 
-        //dd($request->all());
+        switch ($this->action) {
+            case "revise":
+                $this->statusId = roster::getStatusIdByName('Revised');
+                $this->mailSubjects['admin'] = 'REVISED USER Roster Form #[ROSTER_ID]';
+                $this->mailSubjects['client'] = 'REVISED Teamco Roster Form #[ROSTER_ID] - [CLIENT_NAME]';
+                break;
+            case "save":
+                $this->statusId = roster::getStatusIdByName('Draft');
+                $this->mailSubjects['admin'] = 'DRAFT USER Roster Form #[ROSTER_ID]';
+                $this->mailSubjects['client'] = 'DRAFT Teamco Roster Form #[ROSTER_ID] - [CLIENT_NAME]';
+                break;
+            case "submit":
+                $this->statusId = roster::getStatusIdByName('Submitted');
+                $this->mailSubjects['admin'] = 'Roster Form #[ROSTER_ID]';
+                $this->mailSubjects['client'] = 'Teamco Roster Form #[ROSTER_ID] - [CLIENT_NAME]';
+                break;
+        }
+
+        #dd($this->statusId);
 
         $this->setSizes();
 
@@ -371,14 +419,14 @@ class RosterController extends Controller
 
         $mailable = new RosterAdminMailable($data);
         $mailable->replyTo($roster->client->email, $roster->client->name);
-        $mailable->subject('Roster Form #' . $roster->id);
+        $mailable->subject($this->mailSubjects['admin']);
         $job_id = Mail::to(config('mail.admin.to'))->later($when, $mailable);
         unset($mailable);
         MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Admin', 'controller' => __CLASS__, 'job_id' => $job_id]);
 
         $mailable = new RosterClientMailable($data);
         $mailable->replyTo(config('mail.client.reply'), config('mail.client.name'));
-        $mailable->subject('Teamco Roster Form #[' . $roster->id . '] - [' . $roster->client->name . ']');
+        $mailable->subject($this->mailSubjects['client']);
         $job_id = Mail::to($roster->client->email)->later($when, $mailable);
         unset($mailable);
         MailLog::create(['object_id' => $roster->id, 'body' => 'Roster Form for Client', 'controller' => __CLASS__, 'job_id' => $job_id]);
@@ -435,23 +483,44 @@ class RosterController extends Controller
             $sizesHtml[] = sprintf('<option value="%s">%s</option>', $size['name'], $size['name']);
         $response['sizesHtml'] = implode('', $sizesHtml);
 
-        $response['data'] = [];
+        $response['data'] = [
+            'error' => 0,
+            'message' => '',
+            'roster' => null,
+        ];
 
         if ($guid) {
             $roster = roster::where('guid', $guid)->first();
-            $roster->settings = json_decode($roster->settings, true);
-            $jersey = $roster->jersey;
-            $jersey->colors = json_decode($jersey->colors, true);
 
-            $response['data'] = [
-                'roster' => $roster,
-                'teams' => $roster->teams,
-                'client' => $roster->client,
-                'billing' => $roster->client->billing,
-                'jersey' => $jersey,
-                'quantities' => $roster->quantities,
-                'files' => $roster->files,
-            ];
+            if (!$roster) {
+                $response['data']['error'] = 1;
+                $response['data']['message'] = '<div>This Roster Form is no longer editable.<br>You can <a href="/pages/roster-form">create</a> a new one</div>';
+            } else {
+                $roster->settings = json_decode($roster->settings, true);
+                $jersey = $roster->jersey;
+                $jersey->colors = json_decode($jersey->colors, true);
+
+                $response['data']['roster'] = $roster;
+                $response['data']['teams'] = $roster->teams;
+                $response['data']['client'] = $roster->client;
+                $response['data']['billing'] = $roster->client->billing;
+                $response['data']['jersey'] = $jersey;
+                $response['data']['quantities'] = $roster->quantities;
+                $response['data']['files'] = $roster->files;
+
+                /*$response['data'] = [
+                    'error' => 0,
+                    'roster' => $roster,
+                    'teams' => $roster->teams,
+                    'client' => $roster->client,
+                    'billing' => $roster->client->billing,
+                    'jersey' => $jersey,
+                    'quantities' => $roster->quantities,
+                    'files' => $roster->files,
+                ];*/
+            }
+        } else {
+            $response['data']['roster'] = null;
         }
 
         return response()->json($response);

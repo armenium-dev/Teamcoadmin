@@ -88,8 +88,11 @@ class RosterController extends Controller{
 			1 => 'clients.name',
 			2 => 'clients.company',
 			3 => 'rosters.created_at',
+			6 => 'rosters.status',
 		];
 		#dd($request);
+
+        $statuses = roster::$status;
 
 		$query = roster::query();
 
@@ -134,6 +137,7 @@ class RosterController extends Controller{
 					$item->created_at->format('M d, Y'),
 					$item->quantitySumByType('top'),
 					$item->quantitySumByType('short'),
+					$statuses[$item->status],
 					'<a href="'.route('roster.show', $item->id).'" class="btn btn-primary">View</a>',
 					'<a href="'.route('roster.edit', $item->id).'" class="btn btn-secondary">Edit</a>',
 					'<button class="btn btn-danger btn-remove" data-reference_id="'.$item->id.'" data-toggle="modal" data-target="#myModal" data-action="'.route('roster.destroy', $item->id).'" title="Delete"><i class="fa fa-trash"></i></button>',
@@ -177,6 +181,12 @@ class RosterController extends Controller{
 	 */
 	public function show($id){
 		$roster = roster::findOrFail($id);
+
+        if (is_null($roster->guid)) {
+            $guid = md5($roster->created_at.rand(1000, 9999));
+            $roster->update(['guid' => $guid]);
+            $roster = roster::findOrFail($id);
+        }
 
 		$colors_sizes = [];
 		$Sizes        = Size::orderBy('weight')->get();

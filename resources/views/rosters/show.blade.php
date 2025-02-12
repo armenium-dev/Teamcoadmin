@@ -1,6 +1,7 @@
 @extends('layouts.app', ['title' => 'Web Roster '.$roster->id])
 @section('styles')
 <style type="text/css">
+    .flex-1 {flex: 1;}
 	.fa-square:before {text-shadow: 1px 1px 2px #000000;}
 	@media print {
         html, body {margin: 0.2in 0 !important;}
@@ -21,9 +22,10 @@
 @section('content')
 <div class="card-body">
 	<div class="row">
-		<div class="col-md-12 text-center">
-            <a href="{{route('roster.edit', $roster->id)}}" class="float-sm-right">Edit</a>
-            <h4>Roster #{{ $roster->id }}</h4>
+		<div class="col-md-12 text-center d-flex justify-content-between align-items-center">
+            <a href="https://teamcosportswear.com/pages/roster-form?guid={{$roster->guid}}">Edit link for User</a>
+            <h4 class="flex-1">Roster #{{ $roster->id }}</h4>
+            <a href="{{route('roster.edit', $roster->id)}}">Edit link for Admin</a>
         </div>
 	</div>
 	<hr>

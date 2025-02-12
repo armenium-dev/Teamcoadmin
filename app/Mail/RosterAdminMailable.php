@@ -47,7 +47,7 @@ class RosterAdminMailable extends Mailable implements ShouldQueue{
 		$message = $this->markdown('email.roster.admin')
 			->from(config('mail.admin.from'), config('mail.admin.name'))
 			->replyTo($this->data['roster']->client->email, $this->data['roster']->client->name)
-			->subject('Roster Form #'.$this->data['roster']->id);
+			->subject($this->data['subjects']['admin']);
 
 
 		if(count($this->data['roster']->files) > 0){

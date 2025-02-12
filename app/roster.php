@@ -8,6 +8,7 @@ class roster extends Model{
 
 	protected $fillable = [
 		'guid',
+		'status',
 		'reference',
 		'comments',
 		'number_color',
@@ -19,6 +20,12 @@ class roster extends Model{
 		'jersey_set_name',
 		'short_set_name'
 	];
+
+    public static $status = [
+        0 => 'Draft',
+        1 => 'Submitted',
+        2 => 'Revised',
+    ];
 
 	public static $default_settings = [
 		'section_1'  => ['title' => '1. Contact and Shipping Information'],
@@ -96,5 +103,10 @@ class roster extends Model{
 
 		return $quantity->sum('quantity');
 	}
+
+    public static function getStatusIdByName($name)
+    {
+        return array_flip(self::$status)[$name];
+    }
 
 }

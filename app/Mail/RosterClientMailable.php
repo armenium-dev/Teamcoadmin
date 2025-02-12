@@ -44,7 +44,7 @@ class RosterClientMailable extends Mailable implements ShouldQueue
 	    $message = $this->markdown('email.roster.client')
 			->from(config('mail.client.from'), config('mail.client.name'))
 			->replyTo(config('mail.client.reply'), config('mail.client.name'))
-			->subject('Teamco Roster Form #['.$this->data['roster']->id.'] - ['.$this->data['roster']->client->name.']');
+			->subject($this->data['subjects']['client']);
 
         if(count($this->data['roster']->files) >0){
             foreach($this->data['roster']->files as $file){
