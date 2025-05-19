@@ -47,7 +47,7 @@ class QuoteController extends Controller{
 		$quotes = [];
 		#$quotes = quote::all();
 
-		if(isset($request->send_email)){
+		if (isset($request->send_email)){
 			$quote = quote::find($request->quote_id);
 			$products = arraysHelpers::returnProducts($quote->styles);
 			$url = '/admin/customers/search.json?query='.$quote->client->email;
@@ -61,7 +61,7 @@ class QuoteController extends Controller{
 
 			#dd($data);
 
-			foreach($request->send_email as $type){
+			foreach ($request->send_email as $type){
 				$this->send_mail_to($type, $data);
 			}
 		}

@@ -89,7 +89,7 @@ return [
         ],
 
         'custom' => [
-	        'driver' => 'single',
+	        'driver' => 'daily',
 	        'path' => storage_path('logs/custom.log'),
 	        'level' => 'debug',
         ],
