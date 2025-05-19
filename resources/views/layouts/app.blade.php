@@ -13,7 +13,7 @@
         <!-- Fonts -->
         <link rel="dns-prefetch" href="//fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJMJ11wsg6VFekwDjCiW968f4N2Fcxihk&libraries=places&language=en"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz4nbUEPbcIvrFHm5D55Llv5cfQFLa-fI&libraries=places&language=en"></script>
 
         <!-- Styles -->
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -98,7 +98,7 @@
                                         <div class="col-md-1 text-center"><a class="text-dark" href="{{route('logger.index')}}">Logs</a></div>
                                     </div>
                                 </div>
-                                
+
                                 @yield('content')
                             </div>
                         </div>
@@ -114,7 +114,7 @@
     $(".alert-success").fadeTo(2000, 500).slideUp(500, function(){
     $(this).slideUp(500);
     });
-    
+
     });
     </script>
     @endif

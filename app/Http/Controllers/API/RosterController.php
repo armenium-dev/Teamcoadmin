@@ -490,7 +490,9 @@ class RosterController extends Controller
         ];
 
         if ($guid) {
-            $roster = roster::where('guid', $guid)->first();
+            $roster = roster::where('guid', $guid)
+                ->where('created_at', '>=', Carbon::now()->subDays(30))
+                ->first();
 
             if (!$roster) {
                 $response['data']['error'] = 1;

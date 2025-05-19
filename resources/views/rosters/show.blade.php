@@ -4,7 +4,8 @@
     .flex-1 {flex: 1;}
 	.fa-square:before {text-shadow: 1px 1px 2px #000000;}
 	@media print {
-        html, body {margin: 0.2in 0 !important;}
+        html, body {margin: 0.2in 0 !important; background-color: #fff;}
+        .card-body {background-color: #fff;}
         .card-header {display: none;}
 		table,
 		table th,
