@@ -34,11 +34,26 @@
 			<input type="text" id="basics" class="form-control">
 		</div>
 	</div>
-	<div class="row invisible" id="showForm">
+	<div class="row" id="showForm">
 		<form action="{{route('builder.store')}}" method="POST" enctype="multipart/form-data" class="center-form">
 			{{ csrf_field() }}
-			<div class="form-group">
-				<label for="name">2.Upload SVG file:</label>
+			<div id="selectType" class="form-group invisible">
+                <label>2. Type of Builder</label>
+                <label class="d-flex gap-5">
+                    <input type="radio" name="builder_type" value="classic" class="">
+                    <span>Classic</span>
+                </label>
+                <label class="d-flex gap-5">
+                    <input type="radio" name="builder_type" value="dynamic" class="">
+                    <span>Dynamic Theme</span>
+                </label>
+                <label class="d-flex gap-5">
+                    <input type="radio" name="builder_type" value="artisan" class="">
+                    <span>Artisan Theme</span>
+                </label>
+            </div>
+			<div id="selectFile" class="form-group invisible">
+				<label for="name">3.Upload SVG file:</label>
 				<input type="hidden" name="shopify_id" id="idProduct">
 				<input type="file" class="form-control-file border" name="uploadSVG" >
 			</div>
@@ -50,30 +65,11 @@
 @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.min.js"></script>
 <script type="text/javascript">
-
-	// Commented by Armen / Original version
-	/*var options = {
-		url: "/api/info",
-		getValue: function(element){
-			return element.title;
-		},
-		list: {
-			maxNumberOfElements: 10,
-			match: {
-				enabled: true
-			}
-		},
-		template: {
-			type: "custom",
-			method: function(value, item){
-				return '<a href="#" onclick="checkAvailability(' + item.id + ')">' + item.title + '</a>';
-			}
-		}
-	};*/
-	// end
-
-	// Added by Armen
-	var options = {
+    const $basics = $("#basics");
+    const $idProduct = $("#idProduct");
+    const $selectFile = $("#selectFile");
+    const $selectType = $("#selectType");
+	const options = {
 		url: function(phrase) {
 			//console.log(phrase);
 			return "/api/info";
@@ -103,7 +99,6 @@
 				type: "fade", //normal|slide|fade
 				time: 200,
 			},
-
 			hideAnimation: {
 				type: "slide", //normal|slide|fade
 				time: 200,
@@ -116,22 +111,37 @@
 			}
 		}
 	};
-	// end
 
-	$("#basics").easyAutocomplete(options);
+	$basics.easyAutocomplete(options);
 
 	function checkAvailability(id){
 		$.ajax({
 			url: '/api/availability/' + id,
 			success: function(result){
 				if(result.message == 'yes'){
-					$("#showForm").removeClass('invisible');
-					$("#idProduct").val(id);
+					$selectType.removeClass('invisible');
+					$idProduct.val(id);
 				}else{
 					alert('this product has a SVG file');
 				}
 			}
 		});
 	}
+
+    function selectType(e) {
+        const value = $(this).val();
+
+        switch (value) {
+            case 'classic':
+            case 'dynamic':
+                $selectFile.removeClass('invisible');
+                break;
+            case 'artisan':
+                $selectFile.addClass('invisible');
+                break;
+        }
+    }
+
+    $(document).on('click', '[name="builder_type"]', selectType);
 </script>
 @endsection
