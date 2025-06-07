@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function(){
 	Route::match(['PUT', 'PATCH', 'POST'], '/builder/ajaxUpdateFields', 'BuilderController@ajaxUpdateFields')->name('builder.ajaxupdatefields');
 	Route::get('/builder/shopify', 'BuilderController@shopify')->name('builder.shopify');
 	Route::get('/builder/parts', 'BuilderController@parts')->name('builder.parts');
+	Route::get('/garment/parts', 'GarmentController@parts')->name('garment.parts');
 	Route::get('/quotes/parts', 'QuoteController@parts')->name('quote.parts');
 	Route::get('/roster/parts', 'RosterController@parts')->name('roster.parts');
 	Route::get('/design/parts', 'DesignController@parts')->name('design.parts');
@@ -70,6 +71,7 @@ Route::middleware('auth')->group(function(){
 	Route::resource('roster', 'RosterController');
 	Route::resource('design', 'DesignController');
 	Route::resource('logger', 'LoggerController');
+	Route::resource('garment', 'GarmentController');
 	Route::resource('settings', 'SettingsController');
 	Route::resource('shipping', 'ShippingCalculatorController');
 

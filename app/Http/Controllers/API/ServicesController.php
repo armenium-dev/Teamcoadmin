@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Color;
 use App\country;
+use App\Garment;
 use App\Http\Controllers\Controller;
 use App\Http\SVG\arrayUtilities;
 use App\Http\SVG\lotSVGHelper;
@@ -52,10 +53,10 @@ class ServicesController extends Controller
             $data = [
                 'name' => $Product->name,
                 'builder_type' => $Product->builder_type,
-                'url_svg' => $Product->url_svg,
-                'svg_info' => arrayUtilities::setInfo(json_decode($Product->svg_info, true)),
                 'shopify_id' => (string)$Product->shopify_id,
-                'dataExtra' => arrayUtilities::jsonData(json_decode($Product->svg_info, true))
+                'url_svg' => !empty($Product->url_svg) ? $Product->url_svg : null,
+                'svg_info' => !empty($Product->svg_info) ? arrayUtilities::setInfo(json_decode($Product->svg_info, true)) : null,
+                'dataExtra' => !empty($Product->svg_info) ? arrayUtilities::jsonData(json_decode($Product->svg_info, true)) : null,
             ];
 
             return response()->json(['data' => $data], 200);
@@ -170,6 +171,13 @@ class ServicesController extends Controller
             $options = json_decode($options, true);
 
         return response()->json($options);
+    }
+
+    public function getGarments()
+    {
+        $garments = Garment::orderBy('code')->get();
+
+        return response()->json(['data' => $garments], 200);
     }
 }
 

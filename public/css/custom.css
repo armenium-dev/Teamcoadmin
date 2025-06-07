@@ -5,6 +5,10 @@
 .gap-25 {gap: 25px;}
 .gap-30 {gap: 30px;}
 
+.max-w-500 {max-width: 500px;}
+.max-w-600 {max-width: 600px;}
+.max-w-700 {max-width: 700px;}
+
 .loader {background-image: url(../images/loader_tr.gif); background-repeat: no-repeat; background-position: center;}
 
 .fa-square:before {text-shadow: 1px 1px 2px #000000;}

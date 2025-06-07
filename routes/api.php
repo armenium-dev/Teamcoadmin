@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('info','API\InfoController@getProducts')->name('info.products');
 Route::get('availability/{id}','API\InfoController@checkAvailability')->name('info.availability');
 Route::get('colors','API\ServicesController@getColors')->name('colors');
+Route::get('garments','API\ServicesController@getGarments')->name('garments');
 Route::get('product/{id}','API\ServicesController@getProduct')->name('product');
 Route::post('image','API\ServicesController@image')->name('image');
 Route::get('products/{token}','API\TokenController@index')->name('token.index');

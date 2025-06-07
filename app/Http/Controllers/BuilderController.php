@@ -98,8 +98,13 @@ class BuilderController extends Controller
                 $roster[] = [
                     $item->id,
                     $item->name,
-                    '<input type="checkbox" data-id="' . $item->id . '" name="color_autoupdate" ' . $checked . '>',
-                    '<a href="' . route('builder.edit', $item->id) . '" class="btn btn-info text-light" title="Edit"><i class="fa fa-edit"></i></a>',
+                    $item->builder_type,
+                    $item->builder_type == 'artisan'
+                        ? ''
+                        : '<input type="checkbox" data-id="' . $item->id . '" name="color_autoupdate" ' . $checked . '>',
+                    $item->builder_type == 'artisan'
+                        ? ''
+                        : '<a href="' . route('builder.edit', $item->id) . '" class="btn btn-info text-light" title="Edit"><i class="fa fa-edit"></i></a>',
                     '<button class="btn btn-danger btn-remove" data-product-id="' . $item->id . '" data-product-name="' . $item->name . '" data-toggle="modal" data-target="#myModal" data-action="' . route('builder.destroy', $item->id) . '" title="Delete"><i class="fa fa-trash"></i></button>',
                 ];
             }
@@ -137,20 +142,28 @@ class BuilderController extends Controller
      */
     public function store(storeBuilder $request)
     {
-
+        #dd($request->all());
         $url = '/admin/products/' . $request->shopify_id . '.json';
         $getProduct = $this->shopify->get($url)->product;
 
-        $cover = $request->file('uploadSVG');
-        $nameImage = str_replace(" ", "-", $getProduct->title);
-        $svg = $nameImage . '-' . time();
-        $cover->move(public_path('jerseys'), $svg . '.svg');
+        $svg = '';
+
+        if ($request->builder_type != 'artisan') {
+            $cover = $request->file('uploadSVG');
+            $nameImage = str_replace(" ", "-", $getProduct->title);
+            $svg = $nameImage . '-' . time();
+            $cover->move(public_path('jerseys'), $svg . '.svg');
+        }
 
         $request->merge(['name' => $getProduct->title, 'url_svg' => $svg]);
 
         $product = Product::create($request->all());
 
-        return redirect('builder/' . $product->id)->with('status', 'Jersey created');
+        if ($request->builder_type != 'artisan') {
+            return redirect('builder/' . $product->id)->with('status', 'Jersey created');
+        } else {
+            return redirect('builder/')->with('status', 'Jersey created');
+        }
     }
 
     /**
@@ -162,7 +175,7 @@ class BuilderController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        $infoSVG = Svg::GetDataFromSVG($product->url_svg);
+        $infoSVG = !empty($product->url_svg) ? Svg::GetDataFromSVG($product->url_svg) : '';
 
         return view('builder.show', ['product' => $product, 'infoSVG' => $infoSVG]);
     }

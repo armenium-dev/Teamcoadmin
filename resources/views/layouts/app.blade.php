@@ -69,7 +69,7 @@
                         @else
                             <ul class="navbar-nav site-nav ml-auto hidden-lg hidden-md hidden-sm">
                                 <li class="nav-item"><a href="{{route('builder.index')}}">Jersey Builders</a></li>
-                                <li class="nav-item"><a href="{{route('builder.create')}}">Add New Builder </a></li>
+                                <li class="nav-item"><a href="{{route('garment.index')}}">Garment Types</a></li>
                                 <li class="nav-item"><a href="{{route('color.index')}}">Colours</a></li>
                                 <li class="nav-item"><a href="{{route('sizes.index')}}">Sizes</a></li>
                                 <li class="nav-item"><a href="{{route('quotes.index')}}">Inquiries</a></li>
@@ -89,7 +89,7 @@
                                 <div class="card-header bg-light2 top-nav hidden-xs">
                                     <div class="row">
                                         <div class="col-md-2 text-center"><a class="text-dark" href="{{route('builder.index')}}">Jersey Builders</a></div>
-                                        <div class="col-md-2 text-center"><a class="text-dark" href="{{route('builder.create')}}">Add New Builder </a></div>
+                                        <div class="col-md-2 text-center"><a class="text-dark" href="{{route('garment.index')}}">Garment Types</a></div>
                                         <div class="col-md-2 text-center"><a class="text-dark" href="{{route('color.index')}}">Colours</a></div>
                                         <div class="col-md-1 text-center"><a class="text-dark" href="{{route('sizes.index')}}">Sizes</a></div>
                                         <div class="col-md-2 text-center"><a class="text-dark" href="{{route('quotes.index')}}">Inquiries</a></div>
