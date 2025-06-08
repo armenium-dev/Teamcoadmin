@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>
-		
+
 		</title>
 		<style>
 		body{
@@ -25,7 +25,7 @@
 		}
 		.clear {margin-bottom:10px;}
 		</style>
-		
+
 	</head>
 	<body>
 		<div class="ml-10">
@@ -113,7 +113,13 @@
 					<tr>
 						<td colspan="2">
 							@foreach($product['data']->colors as $color)
-							<p class="color"> Color {{$loop->iteration}}: {{$color->name}}</p>
+							<p class="color">
+                                @if(isset($color->label))
+                                    {{$color->label}}: {{$color->name}}
+                                @else
+                                    Color {{$loop->iteration}}: {{$color->name}}
+                                @endif
+                            </p>
 							@endforeach
 						</td>
 					</tr>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Garment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
@@ -9,12 +10,34 @@ use App\TokenProduct;
 
 class TokenController extends Controller
 {
-    //
     public function index($token)
     {
-        $Tokens = TokenProduct::where('token', $token)->get();
+        $tokens = TokenProduct::where('token', $token)->get();
 
-        return response()->json(['data' => json_decode($Tokens)], 200);
+        if ($tokens) {
+            foreach ($tokens as $token) {
+                if (!is_null($token->data)) {
+                    $data = json_decode($token->data, true);
+                    if (isset($data['colors'])) {
+                        foreach ($data['colors'] as $k => $v){
+                            $data['colors'][$k]['label'] = "Color ".($k + 1);
+                        }
+                    }
+                    if (isset($data['garment_type'])) {
+                        $key = count($data['colors']);
+                        $garment = Garment::find($data['garment_type']);
+                        $data['colors'][$key] = [
+                            "label" => "Garment Type",
+                            "code" => $garment->code,
+                            "name" => $garment->code.' - '.$garment->title,
+                        ];
+                    }
+                    $token->data = json_encode($data);
+                }
+            }
+        }
+
+        return response()->json(['data' => $tokens], 200);
     }
 
     public function create()
@@ -42,4 +65,5 @@ class TokenController extends Controller
         $Token = TokenProduct::where('token', $id)->delete();
         return response()->json(['data' => $Token], 200);
     }
+
 }

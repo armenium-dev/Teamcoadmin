@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\ShipEngine\Rates;
 use Illuminate\Support\Collection;
 use App\Helpers\Helper;
+use Illuminate\Support\Facades\Storage;
 
 class ServicesController extends Controller
 {
@@ -176,6 +177,13 @@ class ServicesController extends Controller
     public function getGarments()
     {
         $garments = Garment::orderBy('code')->get();
+
+        if (!empty($garments)) {
+            foreach ($garments as $garment) {
+                $garment->main_image = url(Storage::url($garment->main_image));
+                $garment->size_image = url(Storage::url($garment->size_image));
+            }
+        }
 
         return response()->json(['data' => $garments], 200);
     }

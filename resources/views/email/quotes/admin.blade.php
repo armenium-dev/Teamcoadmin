@@ -98,7 +98,13 @@
 					<tr>
 						<td colspan="2">
 							@foreach($product['data']->colors as $color)
-							<p class="color"> Color {{$loop->iteration}}: {{$color->name}}</p>
+							<p class="color">
+                                @if(isset($color->label))
+                                    {{$color->label}}: {{$color->name}}
+                                @else
+                                    Color {{$loop->iteration}}: {{$color->name}}
+                                @endif
+                            </p>
 							@endforeach
 						</td>
 					</tr>
