@@ -28,8 +28,8 @@ class AdminMailable extends Mailable implements ShouldQueue
     {
         $this->data = $data;
 
-        Log::stack(['custom'])->debug('Products data: '. json_encode($this->data['products']));
-        Log::stack(['custom'])->debug('Quote files: '. json_encode($this->data['quote']->files->toArray()));
+        #Log::stack(['custom'])->debug('Products data: '. json_encode($this->data['products']));
+        #Log::stack(['custom'])->debug('Quote files: '. json_encode($this->data['quote']->files->toArray()));
     }
 
     /**

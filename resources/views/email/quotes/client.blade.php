@@ -112,15 +112,20 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							@foreach($product['data']->colors as $color)
-							<p class="color">
-                                @if(isset($color->label))
-                                    {{$color->label}}: {{$color->name}}
-                                @else
-                                    Color {{$loop->iteration}}: {{$color->name}}
-                                @endif
-                            </p>
-							@endforeach
+                            @if(isset($product['data']->colors))
+                                @foreach($product['data']->colors as $color)
+                                <p class="color">
+                                    @if(isset($color->label))
+                                        {{$color->label}}: {{$color->name}}
+                                    @else
+                                        Color {{$loop->iteration}}: {{$color->name}}
+                                    @endif
+                                </p>
+                                @endforeach
+                            @endif
+                            @if(isset($product['data']->artisan_theme_content))
+                                <p class="color">Artisan theme content: {{$product['data']->artisan_theme_content}}</p>
+                            @endif
 						</td>
 					</tr>
 					<tr>

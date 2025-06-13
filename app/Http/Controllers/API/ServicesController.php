@@ -176,7 +176,7 @@ class ServicesController extends Controller
 
     public function getGarments()
     {
-        $garments = Garment::orderBy('code')->get();
+        $garments = Garment::orderBy('position')->get();
 
         if (!empty($garments)) {
             foreach ($garments as $garment) {

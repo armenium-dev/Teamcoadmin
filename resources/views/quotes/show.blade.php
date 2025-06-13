@@ -60,7 +60,7 @@
 	</div>
 	<hr>
 	<div class="row mt-5">
-		<div class="col-md-6">
+		<div class="col-md-12">
 			<div class="row">
 				<div class="col-md-12">
 					<h4 class="font-weight-bold">Quote Details:</h4>
@@ -74,13 +74,29 @@
 			</div>
 			<div class="row">
 				<div class="col-md-6 mt-2">
-					@foreach($product['data']->colors as $color)
-					<p class="mb-1"><span class="font-weight-bold">Color {{ $loop->iteration }}:</span> {{ $color->name }} <i class="fa fa-square" style="color:{{ $color->code }};font-size:20px;"></i></p>
-					@endforeach
+                    @if(isset($product['data']->colors))
+                        @foreach($product['data']->colors as $color)
+                        <p class="mb-1">
+                            @if(isset($color->label))
+                                <span class="font-weight-bold">{{$color->label}}:</span> {{$color->name}}
+                                @if(strstr($color->code, '#') !== false)
+                                <i class="fa fa-square" style="color:{{ $color->code }};font-size:20px;"></i>
+                                @endif
+                            @else
+                                <span class="font-weight-bold">Color {{ $loop->iteration }}:</span> {{ $color->name }} <i class="fa fa-square" style="color:{{ $color->code }};font-size:20px;"></i>
+                            @endif
+                        </p>
+                        @endforeach
+                    @endif
+                    @if(isset($product['data']->artisan_theme_content))
+                        <p class="mb-1">Artisan theme content: <span class="font-weight-bold">{{$product['data']->artisan_theme_content}}</span></p>
+                    @endif
 					<p class="font-weight-bold text-danger">Quantity: {{ (isset($product['quantity']))?$product['quantity']:'0' }} </p>
 				</div>
 				<div class="col-md-6">
-					<img src="{{ $product['url_svg_temp'] }}" alt="">
+                    @if(!empty($product['url_svg_temp']))
+					    <img src="{{ $product['url_svg_temp'] }}" alt="">
+                    @endif
 				</div>
 			</div>
 			<hr>
@@ -89,7 +105,7 @@
 			<p class="font-weight-bold text-danger">Total Quantity: {{ $quote->styles->sum('quantity') }}</p>
 
 		</div>
-		{{--  
+		{{--
 		<div class="col-md-6">
 			<div class="row">
 				<div class="col-md-12">

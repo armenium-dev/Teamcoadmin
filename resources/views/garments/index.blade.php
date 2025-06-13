@@ -1,6 +1,7 @@
 @extends('layouts.app',['title' => 'Garment Types'])
 @section('styles')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.5/css/rowReorder.bootstrap4.min.css"/>
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('css/custom.css') }}"/>--}}
 @endsection
 @section('content')
@@ -22,19 +23,21 @@
 		</button>
 	</div>
 	@endif
-    <table id="table" class="table table-striped">
+    <table id="table" class="table table-striped text-center display">
         <thead class="thead-dark">
         <tr>
             <th>ID</th>
             <th>Garment Code</th>
             <th>Title</th>
             <th>Description</th>
+            <th>Position</th>
+            <th>Move</th>
             <th>View</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody class="position-relative">
         </tbody>
     </table>
 </div>
@@ -65,40 +68,106 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 <script type="text/javascript">
     jQuery(document).ready(function($) {
 
-		/*$('#table').DataTable({
-			"order": [[ 0, "asc" ]],
-			"pageLength": 50,
-			"lengthMenu": [[10, 25, 50, 75, 100, -1], [10, 25, 50, 75, 100, "All"]]
-		});
-		*/
-
-        $('#table').DataTable({
-            "order": [[0, "asc"]],
+        const table = $('#table').DataTable({
+            "info": false,
+            "order": [[4, "asc"]],
             "pageLength": 20,
             "lengthMenu": [[10, 20, 50, 75, 100, -1], [10, 20, 50, 75, 100, "All"]],
             "processing": true,
             "serverSide": true,
             "ajax": "/garment/parts",
             "columnDefs": [
-                { orderable: true, targets: [0], className: "text-nowrap"},
-                { orderable: true, targets: [1], className: "text-nowrap"},
-                { orderable: true, targets: [2], className: "text-nowrap"},
-                { orderable: true, targets: [3], className: ""},
+                { orderable: false, targets: [1], className: "text-nowrap"},
                 { orderable: false, targets: '_all' }
             ],
             "columns": [
-                {className: "text-center"},
-                {className: "text-center"},
-                {className: "text-left"},
-                {className: "text-left"},
+                {className: "text-center", order: false},
+                {className: "text-center", order: false},
+                {className: "text-left", order: false},
+                {className: "text-left", order: false},
+                {className: "text-center", order: false},
+                {className: "text-center newPointer", order: false},
                 {className: "text-center", order: false},
                 {className: "text-center", order: false},
                 {className: "text-center", order: false},
-            ]
+            ],
+            "rowReorder": {
+                selector: ".newPointer",
+                dataSrc: "data-id"
+            },
+            "createdRow": function(row, data, dataIndex) {
+                // Добавляем data-id к строке
+                $(row).attr('data-id', data[0]); // data[0] содержит ID
+            }
         });
+
+        function savePosition(positions) {
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: "/garment/order",
+                type: 'POST',
+                data: { positions: positions },
+                success: function(result) {
+                    console.log("Positions updated:", result);
+                    table.ajax.reload(null, false);
+                }
+            });
+        }
+
+		/*table.on('row-reorder', function(e, diff, edit) {
+			//savePosition(edit.values);
+            /!*const positions = diff.map(item => ({
+                id: table.row(item.node).data()[0], // Получаем ID из данных строки
+                newPosition: item.newData // Новая позиция
+            }));*!/
+
+            console.log(edit);
+            console.log(diff);
+
+            const positions = diff.map(item => ({
+                id: $(item.node).attr('data-id'),
+                newPosition: item.newData
+            }));
+
+            savePosition(positions);
+		});*/
+
+        table.on('row-reordered', function(e, details, edit) {
+            console.log(details);
+            console.log(edit);
+
+            //const allRows = table.rows({ order: 'reordered' }).nodes();
+
+            const positions = details.map(item => ({
+                id: $(item.node).attr('data-id'),
+                newPosition: item.newPosition
+            }));
+            console.log(positions);
+
+            savePosition(positions);
+        });
+
+        /*table.on('row-reorder', function(e, diff, edit) {
+            // Получаем все строки таблицы
+            const allRows = table.rows().nodes();
+            console.log(allRows);
+
+            // Собираем массив всех позиций
+            const positions = [];
+
+            $(allRows).each(function(index) {
+                positions.push({
+                    id: $(this).attr('data-id'), // или table.row(this).data()[0]
+                    newPosition: index + 1        // Текущая позиция элемента
+                });
+            });
+
+            savePosition(positions);
+        });*/
 
         $(document)
             .on('click', '.btn-remove', function(e){

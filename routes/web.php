@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('/builder/shopify', 'BuilderController@shopify')->name('builder.shopify');
 	Route::get('/builder/parts', 'BuilderController@parts')->name('builder.parts');
 	Route::get('/garment/parts', 'GarmentController@parts')->name('garment.parts');
+	Route::post('/garment/order', 'GarmentController@order')->name('garment.order');
 	Route::get('/quotes/parts', 'QuoteController@parts')->name('quote.parts');
 	Route::get('/roster/parts', 'RosterController@parts')->name('roster.parts');
 	Route::get('/design/parts', 'DesignController@parts')->name('design.parts');

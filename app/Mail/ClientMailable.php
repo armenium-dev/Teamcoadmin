@@ -25,25 +25,25 @@ class ClientMailable extends Mailable implements ShouldQueue {
     public function __construct($data){
         $this->data = $data;
     }
-	
+
 	/*public function handle(JobProcessing $event)
 	{
 		$this->delete();
 	}*/
-	
+
     /**
      * Build the message.
      *
      * @return $this
      */
     public function build(){
-	    
+
         $message = $this->markdown('email.quotes.client')
 			->from(config('mail.client.from'), config('mail.client.name'))
 			->replyTo(config('mail.client.reply'), config('mail.client.name'))
 			->subject('Teamco Web Inquiry - '.$this->data['quote']->client->name.' - #'.$this->data['quote']->id);
 
-	    if(count($this->data['quote']->files) > 0){
+	    /*if(count($this->data['quote']->files) > 0){
 		    #Log::stack(['custom'])->debug('Attached files: '.$this->data['quote']->files);
 		    foreach($this->data['quote']->files as $file){
 			    $message->attach(public_path($file->url), ['as' => $file->name]);
@@ -51,9 +51,28 @@ class ClientMailable extends Mailable implements ShouldQueue {
 	    }
 	    if(count($this->data['products']) > 0){
 		    foreach($this->data['products'] as $product){
-			    $message->attach($product['url_svg_temp']);
+                if (!empty($product['url_svg_temp'])) {
+                    $message->attach($product['url_svg_temp']);
+                }
 		    }
-	    }
+	    }*/
+
+        if (!empty($this->data['quote']->files)) {
+            foreach ($this->data['quote']->files as $file) {
+                if (!empty($file->url) && file_exists(public_path($file->url))) {
+                    $message->attach(public_path($file->url), ['as' => $file->name]);
+                }
+            }
+        }
+
+        if (!empty($this->data['products'])) {
+            foreach ($this->data['products'] as $product) {
+                $product['url_svg_temp'] = trim($product['url_svg_temp']);
+                if (!empty($product['url_svg_temp']) && $product['url_svg_temp'] !== '') {
+                    $message->attach($product['url_svg_temp']);
+                }
+            }
+        }
 
 
         return $message;

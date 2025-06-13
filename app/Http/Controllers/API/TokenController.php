@@ -18,11 +18,13 @@ class TokenController extends Controller
             foreach ($tokens as $token) {
                 if (!is_null($token->data)) {
                     $data = json_decode($token->data, true);
+
                     if (isset($data['colors'])) {
                         foreach ($data['colors'] as $k => $v){
                             $data['colors'][$k]['label'] = "Color ".($k + 1);
                         }
                     }
+
                     if (isset($data['garment_type'])) {
                         $key = count($data['colors']);
                         $garment = Garment::find($data['garment_type']);
@@ -32,6 +34,15 @@ class TokenController extends Controller
                             "name" => $garment->code.' - '.$garment->title,
                         ];
                     }
+
+                    if (isset($data['artisan_theme_content'])) {
+                        $data['colors'][] = [
+                            "label" => "Artisan Theme Code",
+                            "code" => '',
+                            "name" => $data['artisan_theme_content'],
+                        ];
+                    }
+
                     $token->data = json_encode($data);
                 }
             }

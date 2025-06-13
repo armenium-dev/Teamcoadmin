@@ -9,6 +9,7 @@ class Garment extends Model
     protected $table = 'garments';
 
     protected $fillable = [
+        'position',
         'code',
         'title',
         'description',
