@@ -43,6 +43,7 @@
 						<td>Company:</td>
 						<td>{{$data['quote']->client->company}}</td>
 					</tr>
+                    <!--
 					<tr>
 						<td>Address 1:</td>
 						<td>{{$data['quote']->client->address}}</td>
@@ -55,6 +56,7 @@
 						<td>City:</td>
 						<td>{{$data['quote']->client->city}}</td>
 					</tr>
+					-->
 					<tr>
 						<td>Prov/State:</td>
 						<td>{{$data['quote']->client->state}}</td>
