@@ -1,25 +1,60 @@
 <?php
 
 namespace App\Http\SVG;
-use DOMDocument;
-use App\Http\SVG\lotColor; 
-use App\Http\SVG\lotSVGHelper; 
 
-class Svg 
+use DOMDocument;
+use App\Http\SVG\lotColor;
+use App\Http\SVG\lotSVGHelper;
+
+class Svg
 {
+    public static function GetDataFromSVGOptimized($filepath)
+    {
+        $svgContent = file_get_contents(public_path('jerseys/' . $filepath . '.svg'));
+
+        // Быстрый поиск всех HEX-цветов через регулярные выражения (без полного парсинга DOM)
+        $colors = [];
+        preg_match_all('/fill="(#[0-9a-fA-F]{3,6})"/', $svgContent, $fillMatches);
+        preg_match_all('/stop-color:(#[0-9a-fA-F]{3,6})/', $svgContent, $stopMatches);
+
+        $colors = array_unique(array_merge($fillMatches[1] ?? [], $stopMatches[1] ?? []));
+
+        // Обработка градиентов (если они критичны)
+        $gradients = [];
+        if (strpos($svgContent, '<linearGradient') !== false) {
+            preg_match_all('/<linearGradient.*?>(.*?)<\/linearGradient>/s', $svgContent, $gradientMatches);
+
+            foreach ($gradientMatches[0] as $gradientXML) {
+                preg_match_all('/stop-color:(#[0-9a-fA-F]{3,6})/', $gradientXML, $gradientColors);
+                if (!empty($gradientColors[1])) {
+                    $gradients[] = [
+                        'startColor' => $gradientColors[1][0],
+                        'endColor' => end($gradientColors[1]),
+                        'colors' => array_slice($gradientColors[1], 1, -1),
+                    ];
+                }
+            }
+        }
+
+        return [
+            'background' => '#000000',
+            'colors' => $colors,
+            'linearGradients' => $gradients,
+        ];
+    }
+
     /**
-    * We Obtain all data of svg File
-    * like: colors and gradient Colors if anyone exists into the file
-    * @param string $filepath
-   
-    * @return Info Array
-    */
+     * We Obtain all data of svg File
+     * like: colors and gradient Colors if anyone exists into the file
+     * @param string $filepath
+     * @return Info Array
+     */
     public static function GetDataFromSVG($filepath)
     {
-        $svgFile = file_get_contents(public_path('jerseys/'.$filepath.'.svg'));
-      
-        $dom = new DOMDocument( '1.0', 'utf-8' );
-        $dom->loadXML( $svgFile );
+        $svgFile = file_get_contents(public_path('jerseys/' . $filepath . '.svg'));
+
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $dom->loadXML($svgFile);
 
         $elements = $dom->getElementsByTagName('*');
 
@@ -27,20 +62,23 @@ class Svg
         foreach ($elements as $elm) {
             if ($elm->hasAttribute('fill')) {
                 $tmpAttrVal = $elm->getAttribute('fill');
-                if (!in_array($tmpAttrVal, array('', 'none')) && !in_array($tmpAttrVal, $colors)
-                    && preg_match("/^#[A-Za-z0-9]{3,6}$/i", $tmpAttrVal)
-                ) {
-                    $colors[] = $elm->getAttribute('fill');
+                //if (!in_array($tmpAttrVal, ['', 'none']) && !in_array($tmpAttrVal, $colors) && preg_match("/^#[A-Za-z0-9]{3,6}$/i", $tmpAttrVal)) {
+                if ($tmpAttrVal && $tmpAttrVal !== 'none' && strpos($tmpAttrVal, '#') === 0) {
+                    $colors[] = $tmpAttrVal;
                 }
             }
         }
-        
+
+        if (!empty($colors)) {
+            $colors = array_unique(array_filter($colors));
+        }
+
         $linearGradients = $dom->getElementsByTagName('linearGradient');
-        $linearGradientsArray = array();
+        $linearGradientsArray = [];
         $idGrad = 0;
 
         foreach ($linearGradients as $linearGradient) {
-            $linearGradientsArray[$idGrad] = array();
+            $linearGradientsArray[$idGrad] = [];
             foreach ($linearGradient->getElementsByTagName('stop') as $stopEl) {
                 if ($stopEl->hasAttribute('style')) {
                     $tmpAttrVal = $stopEl->getAttribute('style');
@@ -55,7 +93,7 @@ class Svg
         $linearGradientsRawArray = array_unique($linearGradientsArray, SORT_REGULAR);
 
         $iLnGr = 0;
-        $linearGradientsArray = array();
+        $linearGradientsArray = [];
         if (count($linearGradientsRawArray) > 0) {
             foreach ($linearGradientsRawArray as $linearGradientsRaw) {
                 if (count($linearGradientsRaw) > 0) {
@@ -64,7 +102,7 @@ class Svg
                         $linearGradientsArray[$iLnGr] = array(
                             'startColor' => $tmpLnGr,
                             'endColor' => $tmpLnGr,
-                            'colors' => array(),
+                            'colors' => [],
                         );
                     } else {
                         $linearGradientsArray[$iLnGr] = array(
@@ -75,14 +113,14 @@ class Svg
                         if (count($linearGradientsRaw) > 0) {
                             $linearGradientsArray[$iLnGr]['colors'] = $linearGradientsRaw;
                         } else {
-                            $linearGradientsArray[$iLnGr]['colors'] = array();
+                            $linearGradientsArray[$iLnGr]['colors'] = [];
                         }
                     }
                     $iLnGr++;
                 }
             }
         }
-        $result = array();
+        $result = [];
         $result['background'] = '#000000';
 
         if (count($colors) > 0) {
@@ -93,18 +131,18 @@ class Svg
         }
         return $result;
     }
+
     /**
-    * We write new data just like colors and gradients
-    * into the SVG file
-    * @param int $itemId
-    * @param string $newFilename
-    * @param array $svgData
-   
-    * @return Info Array
-    */
+     * We write new data just like colors and gradients
+     * into the SVG file
+     * @param int $itemId
+     * @param string $newFilename
+     * @param array $svgData
+     * @return Info Array
+     */
     public static function setDataToNewSVG($itemId, $newFilename, $svgData)
     {
-        $svgFile = file_get_contents(public_path('jerseys/'.$newFilename.'.svg'));
+        $svgFile = file_get_contents(public_path('jerseys/' . $newFilename . '.svg'));
         $result = [];
         $colors = [];
         $iColor = 0;
@@ -118,8 +156,8 @@ class Svg
             }
         }
 
-        $dom = new DOMDocument( '1.0', 'utf-8' );
-        $dom->loadXML( $svgFile );
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $dom->loadXML($svgFile);
         $background = [];
         if (isset($svgData['background'])) {
             $className = 'ts_item_' . $itemId . '_bgd';
@@ -133,7 +171,7 @@ class Svg
 
             $result['background'] = $background;
         }
-    
+
 
         $colorToGradient = [];
 
@@ -231,7 +269,7 @@ class Svg
                 $linearGradientsXML = $dom->getElementsByTagName('linearGradient');
 
                 foreach ($linearGradientsXML as $linearGradient) {
-                    $linearGradientsArray = array();
+                    $linearGradientsArray = [];
                     foreach ($linearGradient->getElementsByTagName('stop') as $stopEl) {
                         if ($stopEl->hasAttribute('style')) {
                             $tmpAttrVal = $stopEl->getAttribute('style');
@@ -264,31 +302,30 @@ class Svg
         $elementStyle->setAttribute('type', 'text/css');
         $dom->documentElement->appendChild($elementStyle);
 
-        file_put_contents(public_path('jerseys/'.$newFilename.'.svg'), $dom->saveXML());
+        file_put_contents(public_path('jerseys/' . $newFilename . '.svg'), $dom->saveXML());
 
         return $result;
 
     }
-    /**
-    * We update only the the SVG styles
-    * into the SVG file
-    * @param string $svgPath
-    * @param array $svgData
-   
-    * @return Bool
-    */
-    public static function updateStyleSVG($svgPath, $svgData)
-    {   
 
-        $File = 'jerseys/'.$svgPath.'.svg';
-        if($File)
-        {
-            $svgFile = file_get_contents(public_path('jerseys/'.$svgPath.'.svg'));
+    /**
+     * We update only the the SVG styles
+     * into the SVG file
+     * @param string $svgPath
+     * @param array $svgData
+     * @return Bool
+     */
+    public static function updateStyleSVG($svgPath, $svgData)
+    {
+
+        $File = 'jerseys/' . $svgPath . '.svg';
+        if ($File) {
+            $svgFile = file_get_contents(public_path('jerseys/' . $svgPath . '.svg'));
             $style = LotSVGHelper::generateSVGCss($svgData);
-            $dom = new DOMDocument( '1.0', 'utf-8' );
-            $dom->loadXML( $svgFile );
+            $dom = new DOMDocument('1.0', 'utf-8');
+            $dom->loadXML($svgFile);
             $linearGradientsXML = $dom->getElementsByTagName('linearGradient');
-       
+
             foreach ($linearGradientsXML as $linearGradient) {
 
                 if ($linearGradient->hasAttribute('class')
@@ -316,8 +353,7 @@ class Svg
             $elementStyle->setAttribute('type', 'text/css');
             $dom->documentElement->appendChild($elementStyle);
 
-            if(file_put_contents(public_path('jerseys/'.$svgPath.'.svg'), $dom->saveXML()))
-            {
+            if (file_put_contents(public_path('jerseys/' . $svgPath . '.svg'), $dom->saveXML())) {
                 return true;
             }
         }

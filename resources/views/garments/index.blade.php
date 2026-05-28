@@ -26,18 +26,41 @@
     <table id="table" class="table table-striped text-center display">
         <thead class="thead-dark">
         <tr>
-            <th>ID</th>
+            <th>Position</th>
             <th>Garment Code</th>
             <th>Title</th>
             <th>Description</th>
-            <th>Position</th>
             <th>Move</th>
             <th>View</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
         </thead>
-        <tbody class="position-relative">
+        <tbody>
+            @forelse($garments as $garment)
+				<tr id="{{$garment->id}}">
+					<td>{{$garment->position}}</td>
+					<td>{{$garment->code}}</td>
+					<td>{{$garment->title}}</td>
+					<td>{{$garment->description}}</td>
+					<td class="newPointer"> <i class="fa fa-long-arrow-up"></i>  <i class="fa fa-long-arrow-down"></i></td>
+					<td><a href="{{route('garment.show', $garment->id)}}" class="btn btn-primary"><i class="fa fa-edit" title="Edit"></i></a></td>
+					<td><a href="{{route('garment.edit', $garment->id)}}" class="btn btn-primary"><i class="fa fa-edit" title="Edit"></i></a></td>
+					<td>
+						<button class="btn btn-danger btn-remove"
+                                data-garment-id="{{$garment->id}}"
+                                data-garment-name="{{$garment->title}}"
+                                data-action="{{route('garment.destroy', $garment->id)}}"
+                                data-toggle="modal"
+                                data-target="#myModal"
+                                title="Delete"><i class="fa fa-trash"></i></button>
+					</td>
+				</tr>
+            @empty
+				<tr>
+					<td colspan="8">Nothing to show</td>
+				</tr>
+            @endforelse
         </tbody>
     </table>
 </div>
@@ -74,17 +97,17 @@
 
         const table = $('#table').DataTable({
             "info": false,
-            "order": [[4, "asc"]],
-            "pageLength": 20,
+            "order": [[0, "asc"]],
+            "pageLength": 50,
             "lengthMenu": [[10, 20, 50, 75, 100, -1], [10, 20, 50, 75, 100, "All"]],
-            "processing": true,
-            "serverSide": true,
-            "ajax": "/garment/parts",
-            "columnDefs": [
+            //"processing": true,
+            //"serverSide": true,
+            //"ajax": "/garment/parts",
+            /*"columnDefs": [
                 { orderable: false, targets: [1], className: "text-nowrap"},
                 { orderable: false, targets: '_all' }
-            ],
-            "columns": [
+            ],*/
+            /*"columns": [
                 {className: "text-center", order: false},
                 {className: "text-center", order: false},
                 {className: "text-left", order: false},
@@ -94,49 +117,35 @@
                 {className: "text-center", order: false},
                 {className: "text-center", order: false},
                 {className: "text-center", order: false},
-            ],
+            ],*/
             "rowReorder": {
                 selector: ".newPointer",
-                dataSrc: "data-id"
+                //dataSrc: "data-id"
             },
-            "createdRow": function(row, data, dataIndex) {
+            /*"createdRow": function(row, data, dataIndex) {
                 // Добавляем data-id к строке
                 $(row).attr('data-id', data[0]); // data[0] содержит ID
-            }
+            }*/
         });
 
-        function savePosition(positions) {
+        function savePosition(values) {
             $.ajax({
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 url: "/garment/order",
                 type: 'POST',
-                data: { positions: positions },
+                data: { position: values },
                 success: function(result) {
                     console.log("Positions updated:", result);
-                    table.ajax.reload(null, false);
+                    //table.ajax.reload(null, false);
                 }
             });
         }
 
-		/*table.on('row-reorder', function(e, diff, edit) {
-			//savePosition(edit.values);
-            /!*const positions = diff.map(item => ({
-                id: table.row(item.node).data()[0], // Получаем ID из данных строки
-                newPosition: item.newData // Новая позиция
-            }));*!/
+        table.on('row-reorder', function(e, diff, edit) {
+			savePosition(edit.values);
+		});
 
-            console.log(edit);
-            console.log(diff);
-
-            const positions = diff.map(item => ({
-                id: $(item.node).attr('data-id'),
-                newPosition: item.newData
-            }));
-
-            savePosition(positions);
-		});*/
-
-        table.on('row-reordered', function(e, details, edit) {
+        /*table.on('row-reordered', function(e, details, edit) {
             console.log(details);
             console.log(edit);
 
@@ -147,24 +156,6 @@
                 newPosition: item.newPosition
             }));
             console.log(positions);
-
-            savePosition(positions);
-        });
-
-        /*table.on('row-reorder', function(e, diff, edit) {
-            // Получаем все строки таблицы
-            const allRows = table.rows().nodes();
-            console.log(allRows);
-
-            // Собираем массив всех позиций
-            const positions = [];
-
-            $(allRows).each(function(index) {
-                positions.push({
-                    id: $(this).attr('data-id'), // или table.row(this).data()[0]
-                    newPosition: index + 1        // Текущая позиция элемента
-                });
-            });
 
             savePosition(positions);
         });*/

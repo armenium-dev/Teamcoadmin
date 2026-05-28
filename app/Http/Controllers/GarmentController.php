@@ -19,7 +19,7 @@ class GarmentController extends Controller
 
     public function index()
     {
-        $garments = [];
+        $garments = Garment::orderBy('position', 'ASC')->get();
 
         return view('garments.index', ['garments' => $garments]);
     }
@@ -179,24 +179,22 @@ class GarmentController extends Controller
 
     public function order(Request $request)
     {
-        $positions = $request->positions; // Получаем массив позиций
-        //dd($positions);
-        // Проверяем, что данные получены
+        foreach($request->position as $key => $value){
+			Garment::where('id', $key)->update(['position' => $value]);
+		}
+
+        /*$positions = $request->positions;
+
         if (empty($positions)) {
             return response('No positions data received', 400);
         }
 
         DB::transaction(function () use ($positions) {
             foreach ($positions as $position) {
-                // Проверяем наличие обязательных полей
-                /*if (!isset($position['id'])) {
-                    throw new \Exception('Missing garment ID in position data');
-                }*/
-
                 Garment::where('id', $position['id'])
                     ->update(['position' => $position['newPosition']]);
             }
-        });
+        });*/
 
         return response('Update Successfully', 200);
     }

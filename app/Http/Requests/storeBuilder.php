@@ -24,7 +24,7 @@ class storeBuilder extends FormRequest
     public function rules()
     {
         return [
-            'uploadSVG'       => 'image|mimes:svg|max:2048',
+            'uploadSVG'       => 'image|mimes:svg|max:20480',
         ];
     }
     public function messages()

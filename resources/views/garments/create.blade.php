@@ -32,7 +32,7 @@
         @csrf
         <div class="form-group">
             <label for="name">1. Main Image:</label>
-            <input type="file" class="form-control-file border" name="mainImage" >
+            <input type="file" class="form-control-file border" name="mainImage">
         </div>
         <div class="form-group">
             <label for="name">2. Garment Code:</label>
@@ -48,7 +48,7 @@
         </div>
         <div class="form-group">
             <label for="name">5. Size Chart:</label>
-            <input type="file" class="form-control-file border" name="sizeImage" >
+            <input type="file" class="form-control-file border" name="sizeImage">
         </div>
 
         <button class="btn btn-primary" type="submit">Submit</button>

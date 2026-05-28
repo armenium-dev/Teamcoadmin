@@ -29,12 +29,12 @@ class StoreGarment extends FormRequest
 
         if ($this->isMethod('post')) {
             // Правила только для создания
-            $rules['mainImage'] = 'required|file|mimes:png,jpg,jpeg,gif,webp|max:10240';
-            $rules['sizeImage'] = 'required|file|mimes:png,jpg,jpeg,gif,webp|max:10240';
+            $rules['mainImage'] = 'required|file|mimes:png,jpg,jpeg,gif,webp|max:20480';
+            $rules['sizeImage'] = 'sometimes|file|mimes:png,jpg,jpeg,gif,webp|max:20480';
         } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
             // Правила только для обновления
-            $rules['mainImage'] = 'sometimes|file|mimes:png,jpg,jpeg,gif,webp|max:10240';
-            $rules['sizeImage'] = 'sometimes|file|mimes:png,jpg,jpeg,gif,webp|max:10240';
+            $rules['mainImage'] = 'sometimes|file|mimes:png,jpg,jpeg,gif,webp|max:20480';
+            $rules['sizeImage'] = 'sometimes|file|mimes:png,jpg,jpeg,gif,webp|max:20480';
         }
 
         return $rules;

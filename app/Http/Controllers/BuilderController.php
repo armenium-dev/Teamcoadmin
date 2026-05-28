@@ -175,7 +175,7 @@ class BuilderController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        $infoSVG = !empty($product->url_svg) ? Svg::GetDataFromSVG($product->url_svg) : '';
+        $infoSVG = !empty($product->url_svg) ? Svg::GetDataFromSVGOptimized($product->url_svg) : '';
 
         return view('builder.show', ['product' => $product, 'infoSVG' => $infoSVG]);
     }

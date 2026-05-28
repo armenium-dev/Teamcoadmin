@@ -125,9 +125,9 @@
                                 </p>
                                 @endforeach
                             @endif
-                            @if(isset($product['data']->artisan_theme_content))
+                            {{--@if(isset($product['data']->artisan_theme_content))
                                 <p class="color">Artisan theme content: {{$product['data']->artisan_theme_content}}</p>
-                            @endif
+                            @endif--}}
 						</td>
 					</tr>
 					<tr>

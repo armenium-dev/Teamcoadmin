@@ -180,8 +180,10 @@ class ServicesController extends Controller
 
         if (!empty($garments)) {
             foreach ($garments as $garment) {
-                $garment->main_image = url(Storage::url($garment->main_image));
-                $garment->size_image = url(Storage::url($garment->size_image));
+                if (!is_null($garment->main_image))
+                    $garment->main_image = url(Storage::url($garment->main_image));
+                if (!is_null($garment->size_image))
+                    $garment->size_image = url(Storage::url($garment->size_image));
             }
         }
 

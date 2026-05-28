@@ -23,23 +23,29 @@ class TokenController extends Controller
                         foreach ($data['colors'] as $k => $v){
                             $data['colors'][$k]['label'] = "Color ".($k + 1);
                         }
-                    }
+                    } else $data['colors'] = [];
 
                     if (isset($data['garment_type'])) {
-                        $key = count($data['colors']);
-                        $garment = Garment::find($data['garment_type']);
-                        $data['colors'][$key] = [
-                            "label" => "Garment Type",
-                            "code" => $garment->code,
-                            "name" => $garment->code.' - '.$garment->title,
-                        ];
+                        //$key = count($data['colors']);
+
+                        $garments = Garment::whereIn('id', $data['garment_type'])->get();
+
+                        if ($garments) {
+                            foreach ($garments as $garment) {
+                                $data['colors'][] = [
+                                    "label" => "Garment Type",
+                                    "code" => $garment->code,
+                                    "name" => $garment->code . ' - ' . $garment->title,
+                                ];
+                            }
+                        }
                     }
 
-                    if (isset($data['artisan_theme_content'])) {
+                    if (isset($data['artisan_theme_code'])) {
                         $data['colors'][] = [
                             "label" => "Artisan Theme Code",
                             "code" => '',
-                            "name" => $data['artisan_theme_content'],
+                            "name" => $data['artisan_theme_code'],
                         ];
                     }
 

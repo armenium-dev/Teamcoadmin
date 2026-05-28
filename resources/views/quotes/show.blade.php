@@ -88,9 +88,9 @@
                         </p>
                         @endforeach
                     @endif
-                    @if(isset($product['data']->artisan_theme_content))
+                    {{-- @if(isset($product['data']->artisan_theme_content))
                         <p class="mb-1">Artisan theme content: <span class="font-weight-bold">{{$product['data']->artisan_theme_content}}</span></p>
-                    @endif
+                    @endif--}}
 					<p class="font-weight-bold text-danger">Quantity: {{ (isset($product['quantity']))?$product['quantity']:'0' }} </p>
 				</div>
 				<div class="col-md-6">
