@@ -125,3 +125,5 @@ table.shipping-results tr td:nth-child(3) {text-align: right;}
 
 .w-title {width: 170px;}
 .w-current {width: 300px;}
+
+.svg-col svg {width: 100%;}
