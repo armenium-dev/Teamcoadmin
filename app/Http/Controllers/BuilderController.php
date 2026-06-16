@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Color;
+use App\Helpers\Svg11To10Converter;
 use App\Http\Requests\storeBuilder;
 use App\Http\Shopify\Shopify;
 use App\Http\SVG\arrayUtilities;
@@ -153,6 +154,10 @@ class BuilderController extends Controller
             $nameImage = str_replace(" ", "-", $getProduct->title);
             $svg = $nameImage . '-' . time();
             $cover->move(public_path('jerseys'), $svg . '.svg');
+
+            $svgFile = public_path('jerseys/' . $svg . '.svg');
+            $svgConverter = new Svg11To10Converter();
+            $svgConverter->convertFile($svgFile);
         }
 
         $request->merge(['name' => $getProduct->title, 'url_svg' => $svg]);
@@ -175,8 +180,10 @@ class BuilderController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        $infoSVG = !empty($product->url_svg) ? Svg::GetDataFromSVGOptimized($product->url_svg) : '';
-
+        $infoSVG = !empty($product->url_svg)
+            ? Svg::GetDataFromSVGOptimized($product->url_svg)
+            : '';
+        //dump($infoSVG);
         return view('builder.show', ['product' => $product, 'infoSVG' => $infoSVG]);
     }
 
@@ -271,6 +278,10 @@ class BuilderController extends Controller
         $svg = $nameImage . '-' . time();
         $cover->move(public_path('jerseys'), $svg . '.svg');
 
+        $svgFile = public_path('jerseys/' . $svg . '.svg');
+        $svgConverter = new Svg11To10Converter();
+        $svgConverter->convertFile($svgFile);
+
         $product->find($id)->update([
             'url_svg' => $svg
         ]);
@@ -315,7 +326,7 @@ class BuilderController extends Controller
         }
         $sort = $ProductSvgInfo['sort'];
         array_multisort($sort, SORT_ASC, $ProductSvgInfo['sort']);
-        if (SVG::updateStyleSVG($product->url_svg, $ProductSvgInfo)) {
+        if (Svg::updateStyleSVG($product->url_svg, $ProductSvgInfo)) {
             $product->update([
                 'svg_info' => json_encode($ProductSvgInfo)
             ]);

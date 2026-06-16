@@ -82,7 +82,7 @@ class ServicesController extends Controller
         File::copy(public_path('jerseys/' . $product->url_svg . '.svg'), public_path('jerseys/' . $tempFile . '.svg'));
         # File::copy('public/jerseys/'.$product->url_svg.'.svg', 'public/jerseys/'.$tempFile.'.svg');
         # File::copy(base_path().'/public/jerseys/'.$product->url_svg.'.svg', base_path().'/public/jerseys/'.$tempFile.'.svg');
-        if (SVG::updateStyleSVG($tempFile, $svgData)) {
+        if (Svg::updateStyleSVG($tempFile, $svgData)) {
             return response()->json(['data' => $tempFile]);
         }
     }
