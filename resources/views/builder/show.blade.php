@@ -21,12 +21,12 @@
             </div>
         @endif
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-lg-3 svg-col">
                 @if($product->url_svg)
                     @svg("public/jerseys/$product->url_svg")
                 @endif
             </div>
-            <div class="col-md-9">
+            <div class="col-lg-9">
                 <form method="POST" action="{{route('builder.update',$product->id)}}">
                     @csrf
                     <input name="_method" type="hidden" value="PATCH">

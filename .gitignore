@@ -17,6 +17,8 @@
 /vendor
 /.idea
 /.vscode
+/.ai
+/.tmp
 /nbproject
 /.vagrant
 Homestead.json
